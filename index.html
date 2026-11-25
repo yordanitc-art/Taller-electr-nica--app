@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1419">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Inventario Taller</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #0f1419;
+    --card: #1a2029;
+    --card-2: #222a35;
+    --border: #2d3745;
+    --text: #e6edf3;
+    --muted: #8b98a8;
+    --accent: #58a6ff;
+    --pendiente: #e3b341;
+    --terminado: #3fb950;
+    --desguazado: #f85149;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  }
+  .container { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+  button, select, input, textarea { font: inherit; color: inherit; }
+
+  /* ---------- Barra superior fija ---------- */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: rgba(15,20,25,.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: calc(12px + env(safe-area-inset-top)) 0 12px;
+  }
+  .topbar h1 { margin: 0 0 10px; font-size: 1.25rem; }
+  .search {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+  }
+  .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,.2); }
+  .counter { margin-top: 8px; color: var(--muted); font-size: .92rem; }
+  .counter strong { color: var(--text); }
+  .titulo { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  .titulo h1 { margin: 0; }
+  .red {
+    flex: 0 0 auto; padding: 4px 12px; border-radius: 999px;
+    font-size: .8rem; font-weight: 700;
+    background: rgba(63,185,80,.16); color: var(--terminado);
+  }
+  .red.off { background: rgba(227,179,65,.16); color: var(--pendiente); }
+
+  /* ---------- Botones ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 54px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 1.02rem;
+    cursor: pointer;
+    width: 100%;
+    transition: transform .08s, filter .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); color: #07111f; }
+  .btn-sec { background: var(--card-2); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: transparent; color: var(--desguazado); border: 1.5px solid var(--desguazado); min-height: 50px; margin-top: 14px; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+
+  /* ---------- Formulario ---------- */
+  form, .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  form { margin-top: 16px; }
+  h2 { margin: 0 0 14px; font-size: 1.15rem; }
+  .field { margin-bottom: 14px; }
+  label { display: block; margin-bottom: 6px; font-size: .9rem; color: var(--muted); font-weight: 600; }
+  input[type=text], select, textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,.2); }
+  input[type=file] { width: 100%; padding: 6px; background: var(--bg); border: 1px dashed var(--border); border-radius: 10px; }
+  input[type=file]::file-selector-button {
+    min-height: 46px;
+    padding: 0 16px;
+    margin-right: 12px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--card-2);
+    color: var(--text);
+    font-weight: 600;
+  }
+  .row { display: grid; grid-template-columns: 1fr; gap: 0 12px; }
+  @media (min-width: 560px) { .row { grid-template-columns: 1fr 1fr; } }
+  .preview { display: none; margin-top: 10px; }
+  .preview.show { display: flex; align-items: center; gap: 12px; }
+  .preview img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+  .preview button {
+    min-height: 44px; padding: 0 14px; border-radius: 10px;
+    background: transparent; border: 1px solid var(--border); color: var(--muted); cursor: pointer;
+  }
+
+  /* ---------- Tarjetas ---------- */
+  .list-title { margin: 28px 0 12px; }
+  #lista { display: grid; gap: 12px; }
+  .card { border-left: 5px solid var(--border); }
+  .card.Pendiente  { border-left-color: var(--pendiente); }
+  .card.Terminado  { border-left-color: var(--terminado); }
+  .card.Desguazado { border-left-color: var(--desguazado); }
+  .card-top { display: flex; gap: 14px; align-items: flex-start; }
+  .thumb {
+    flex: 0 0 auto;
+    width: 84px; height: 84px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: zoom-in;
+    background: var(--bg);
+  }
+  .card-info { min-width: 0; flex: 1; }
+  .card h3 { margin: 0 0 2px; font-size: 1.1rem; word-break: break-word; }
+  .card .sub { color: var(--muted); font-size: .92rem; margin-bottom: 8px; word-break: break-word; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: .82rem; font-weight: 700; }
+  .badge.Pendiente  { background: rgba(227,179,65,.16); color: var(--pendiente); }
+  .badge.Terminado  { background: rgba(63,185,80,.16);  color: var(--terminado); }
+  .badge.Desguazado { background: rgba(248,81,73,.16);  color: var(--desguazado); }
+  .loc { color: var(--muted); font-size: .92rem; }
+  .comp-title { margin-top: 12px; font-size: .78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .comp { margin: 4px 0 0; white-space: pre-wrap; word-break: break-word; }
+  .empty {
+    text-align: center; color: var(--muted); padding: 32px 16px;
+    border: 1.5px dashed var(--border); border-radius: var(--radius);
+  }
+
+  /* ---------- Lightbox y aviso ---------- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 20;
+    background: rgba(0,0,0,.9);
+    display: none; align-items: center; justify-content: center; padding: 16px;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+  .toast {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 140px);
+    background: var(--card-2); border: 1px solid var(--border);
+    padding: 12px 20px; border-radius: 999px;
+    transition: transform .25s; z-index: 30; max-width: 90vw; text-align: center;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <div class="titulo">
+      <h1>⚡ Inventario del Taller</h1>
+      <span class="red" id="red">● En línea</span>
+    </div>
+    <input class="search" id="buscar" type="search" placeholder="🔍 Buscar por nombre o marca..." autocomplete="off">
+    <div class="counter" id="contador"></div>
+  </div>
+</div>
+
+<main class="container">
+
+  <div class="btn-row">
+    <button class="btn btn-sec" id="btnExportar" type="button">⬇ Exportar a JSON</button>
+    <button class="btn btn-sec" id="btnImportar" type="button">⬆ Importar JSON</button>
+  </div>
+  <input type="file" id="archivoImportar" accept="application/json,.json" hidden>
+
+  <form id="formEquipo" autocomplete="off">
+    <h2>Agregar equipo</h2>
+
+    <div class="field">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" placeholder="Ej. UPS APC" required maxlength="120">
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="marca">Marca</label>
+        <input id="marca" type="text" placeholder="Ej. APC" maxlength="80">
+      </div>
+      <div class="field">
+        <label for="modelo">Modelo</label>
+        <input id="modelo" type="text" placeholder="Ej. Back-UPS 600" maxlength="80">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="componentes">Componentes Rescatados</label>
+      <textarea id="componentes" placeholder="Ej. Batería 12V, transformador, relés, capacitores..."></textarea>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="estado">Estado</label>
+        <select id="estado">
+          <option value="Pendiente">Pendiente</option>
+          <option value="Desguazado">Desguazado</option>
+          <option value="Terminado">Terminado</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="ubicacion">Ubicación</label>
+        <input id="ubicacion" type="text" placeholder="Ej. Caja 1" maxlength="80">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="foto">Foto del equipo (opcional)</label>
+      <input id="foto" type="file" accept="image/*">
+      <div class="preview" id="preview">
+        <img id="previewImg" alt="Vista previa">
+        <button type="button" id="quitarFoto">Quitar foto</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btnGuardar" type="submit">💾 Guardar</button>
+  </form>
+
+  <h2 class="list-title">Equipos guardados</h2>
+  <div id="lista"></div>
+
+</main>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt="Foto ampliada"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CLAVE = 'inventario_taller_v1';
+  var CLAVE_ANTIGUA = 'inventario_electronica_v1'; // compatibilidad con la versión anterior
+  var ESTADOS = ['Pendiente', 'Desguazado', 'Terminado'];
+  var MAX_LADO = 800;       // las fotos se reducen a 800 px para no llenar localStorage
+  var CALIDAD = 0.7;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $('formEquipo'), lista = $('lista'), contador = $('contador'),
+      buscar = $('buscar'), toastEl = $('toast'), btnGuardar = $('btnGuardar'),
+      inputFoto = $('foto'), preview = $('preview'), previewImg = $('previewImg'),
+      lightbox = $('lightbox'), lightboxImg = $('lightboxImg');
+  var fotoActual = '';
+  var toastTimer;
+
+  // ---------- Almacenamiento ----------
+  function leer(clave) {
+    try {
+      var d = JSON.parse(localStorage.getItem(clave));
+      return Array.isArray(d) ? d : null;
+    } catch (e) { return null; }
+  }
+  function cargar() {
+    var d = leer(CLAVE);
+    if (d) return d;
+    var vieja = leer(CLAVE_ANTIGUA);
+    return vieja || [];
+  }
+  function guardar(datos) {
+    try {
+      localStorage.setItem(CLAVE, JSON.stringify(datos));
+      return true;
+    } catch (e) {
+      aviso('Almacenamiento lleno. Exporta un respaldo y elimina equipos o fotos.');
+      return false;
+    }
+  }
+  var equipos = cargar();
+
+  // ---------- Utilidades ----------
+  function aviso(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+  function crearId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function norm(t) {
+    return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+  function el(tag, clase, texto) {
+    var n = document.createElement(tag);
+    if (clase) n.className = clase;
+    if (texto !== undefined) n.textContent = texto;
+    return n;
+  }
+  function txt(v, max) { return String(v == null ? '' : v).slice(0, max); }
+
+  // ---------- Imagen -> Base64 (redimensionada) ----------
+  function imagenABase64(file) {
+    return new Promise(function (resolve, reject) {
+      var lector = new FileReader();
+      lector.onerror = function () { reject(new Error('lectura')); };
+      lector.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error('imagen')); };
+        img.onload = function () {
+          var escala = Math.min(1, MAX_LADO / Math.max(img.width, img.height));
+          var w = Math.round(img.width * escala), h = Math.round(img.height * escala);
+          var c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          var ctx = c.getContext('2d');
+          ctx.fillStyle = '#fff';           // fondo blanco por si la imagen tiene transparencia
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(c.toDataURL('image/jpeg', CALIDAD));
+        };
+        img.src = lector.result;
+      };
+      lector.readAsDataURL(file);
+    });
+  }
+
+  inputFoto.addEventListener('change', function () {
+    var f = inputFoto.files && inputFoto.files[0];
+    if (!f) { limpiarFoto(); return; }
+    btnGuardar.disabled = true;
+    imagenABase64(f).then(function (b64) {
+      fotoActual = b64;
+      previewImg.src = b64;
+      preview.classList.add('show');
+    }).catch(function () {
+      limpiarFoto();
+      aviso('No se pudo leer la imagen');
+    }).then(function () { btnGuardar.disabled = false; });
+  });
+  function limpiarFoto() {
+    fotoActual = '';
+    inputFoto.value = '';
+    previewImg.removeAttribute('src');
+    preview.classList.remove('show');
+  }
+  $('quitarFoto').addEventListener('click', limpiarFoto);
+
+  // ---------- Render ----------
+  function filtrados() {
+    var q = norm(buscar.value.trim());
+    if (!q) return equipos;
+    return equipos.filter(function (e) {
+      return norm(e.nombre).indexOf(q) !== -1 || norm(e.marca).indexOf(q) !== -1;
+    });
+  }
+
+  function render() {
+    var visibles = filtrados();
+    lista.textContent = '';
+
+    contador.textContent = '';
+    var s = el('strong', '', String(equipos.length));
+    contador.appendChild(document.createTextNode('Total: '));
+    contador.appendChild(s);
+    contador.appendChild(document.createTextNode(equipos.length === 1 ? ' equipo' : ' equipos'));
+    if (visibles.length !== equipos.length) {
+      contador.appendChild(document.createTextNode(' · mostrando ' + visibles.length));
+    }
+
+    if (!visibles.length) {
+      lista.appendChild(el('div', 'empty',
+        equipos.length ? 'Ningún equipo coincide con la búsqueda.' : 'Aún no hay equipos. Agrega el primero arriba.'));
+      return;
+    }
+
+    visibles.forEach(function (eq) {
+      var card = el('article', 'card ' + eq.estado);
+      var top = el('div', 'card-top');
+
+      if (eq.foto) {
+        var im = el('img', 'thumb');
+        im.src = eq.foto;
+        im.alt = 'Foto de ' + eq.nombre;
+        im.loading = 'lazy';
+        im.addEventListener('click', function () {
+          lightboxImg.src = eq.foto;
+          lightbox.classList.add('show');
+        });
+        top.appendChild(im);
+      }
+
+      var info = el('div', 'card-info');
+      info.appendChild(el('h3', '', eq.nombre));
+      var sub = [eq.marca, eq.modelo].filter(Boolean).join(' · ');
+      if (sub) info.appendChild(el('div', 'sub', sub));
+      var meta = el('div', 'meta');
+      meta.appendChild(el('span', 'badge ' + eq.estado, eq.estado));
+      if (eq.ubicacion) meta.appendChild(el('span', 'loc', '📦 ' + eq.ubicacion));
+      info.appendChild(meta);
+      top.appendChild(info);
+      card.appendChild(top);
+
+      if (eq.componentes) {
+        card.appendChild(el('div', 'comp-title', 'Componentes rescatados'));
+        card.appendChild(el('p', 'comp', eq.componentes));
+      }
+
+      var btn = el('button', 'btn btn-danger', '🗑 Eliminar');
+      btn.type = 'button';
+      btn.addEventListener('click', function () { eliminar(eq.id, eq.nombre); });
+      card.appendChild(btn);
+
+      lista.appendChild(card);
+    });
+  }
+
+  lightbox.addEventListener('click', function () {
+    lightbox.classList.remove('show');
+    lightboxImg.removeAttribute('src');
+  });
+  buscar.addEventListener('input', render);
+
+  // ---------- Acciones ----------
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var nombre = $('nombre').value.trim();
+    if (!nombre) { aviso('El nombre es obligatorio'); return; }
+
+    var nuevo = {
+      id: crearId(),
+      nombre: nombre,
+      marca: $('marca').value.trim(),
+      modelo: $('modelo').value.trim(),
+      componentes: $('componentes').value.trim(),
+      estado: $('estado').value,
+      ubicacion: $('ubicacion').value.trim(),
+      foto: fotoActual,
+      fecha: new Date().toISOString()
+    };
+
+    var copia = equipos.slice();
+    copia.unshift(nuevo);
+    if (guardar(copia)) {
+      equipos = copia;
+      form.reset();
+      limpiarFoto();
+      render();
+      aviso('Equipo guardado ✔');
+    }
+  });
+
+  function eliminar(id, nombre) {
+    if (!confirm('¿Eliminar "' + nombre + '"?')) return;
+    var copia = equipos.filter(function (e) { return e.id !== id; });
+    if (guardar(copia)) {
+      equipos = copia;
+      render();
+      aviso('Equipo eliminado');
+    }
+  }
+
+  // ---------- Exportar / Importar ----------
+  $('btnExportar').addEventListener('click', function () {
+    if (!equipos.length) { aviso('No hay datos para exportar'); return; }
+    var blob = new Blob([JSON.stringify(equipos, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'inventario-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+    aviso('Respaldo descargado ✔');
+  });
+
+  var archivoImportar = $('archivoImportar');
+  $('btnImportar').addEventListener('click', function () { archivoImportar.click(); });
+
+  function limpiarItem(x) {
+    if (!x || typeof x !== 'object') return null;
+    var nombre = txt(x.nombre, 120).trim();
+    if (!nombre) return null;
+    var foto = typeof x.foto === 'string' && x.foto.indexOf('data:image/') === 0 ? x.foto : '';
+    return {
+      id: txt(x.id, 40) || crearId(),
+      nombre: nombre,
+      marca: txt(x.marca, 80),
+      modelo: txt(x.modelo, 80),
+      componentes: txt(x.componentes, 5000),
+      estado: ESTADOS.indexOf(x.estado) !== -1 ? x.estado : 'Pendiente',
+      ubicacion: txt(x.ubicacion, 80),
+      foto: foto,
+      fecha: txt(x.fecha, 40) || new Date().toISOString()
+    };
+  }
+
+  archivoImportar.addEventListener('change', function () {
+    var f = archivoImportar.files && archivoImportar.files[0];
+    archivoImportar.value = '';
+    if (!f) return;
+    var lector = new FileReader();
+    lector.onerror = function () { aviso('No se pudo leer el archivo'); };
+    lector.onload = function () {
+      var datos;
+      try { datos = JSON.parse(lector.result); } catch (e) { aviso('El archivo no es un JSON válido'); return; }
+      if (!Array.isArray(datos)) { aviso('Formato no reconocido'); return; }
+
+      var existentes = {};
+      equipos.forEach(function (e) { existentes[e.id] = true; });
+      var nuevos = [];
+      datos.forEach(function (x) {
+        var item = limpiarItem(x);
+        if (item && !existentes[item.id]) { existentes[item.id] = true; nuevos.push(item); }
+      });
+
+      if (!nuevos.length) { aviso('No hay equipos nuevos para importar'); return; }
+      if (!confirm('Se agregarán ' + nuevos.length + ' equipos nuevos a los ' + equipos.length + ' actuales. ¿Continuar?')) return;
+
+      var copia = nuevos.concat(equipos);
+      if (guardar(copia)) {
+        equipos = copia;
+        render();
+        aviso('Importados ' + nuevos.length + ' equipos ✔');
+      }
+    };
+    lector.readAsText(f);
+  });
+
+  // ---------- Estado de conexión ----------
+  var redEl = $('red');
+  function pintarRed() {
+    var online = navigator.onLine;
+    redEl.textContent = online ? '● En línea' : '● Sin conexión';
+    redEl.classList.toggle('off', !online);
+  }
+  window.addEventListener('online', function () { pintarRed(); aviso('Conexión restablecida'); buscarActualizacion(); });
+  window.addEventListener('offline', function () { pintarRed(); aviso('Sin conexión: la app sigue funcionando'); });
+  pintarRed();
+
+  // ---------- Service Worker (offline + actualización automática) ----------
+  var registro = null;
+  function buscarActualizacion() {
+    if (registro && navigator.onLine) registro.update().catch(function () {});
+  }
+
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    var teniaControl = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (teniaControl) aviso('Nueva versión instalada. Cierra y abre la app para usarla.');
+      teniaControl = true;
+    });
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').then(function (r) {
+        registro = r;
+        buscarActualizacion();
+      }).catch(function () {});
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) buscarActualizacion();
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
