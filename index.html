@@ -32,7 +32,7 @@
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: 16px;
     line-height: 1.45;
-    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
   }
   .container { max-width: 720px; margin: 0 auto; padding: 0 16px; }
   button, select, input, textarea { font: inherit; color: inherit; }
@@ -178,13 +178,183 @@
   .lightbox.show { display: flex; }
   .lightbox img { max-width: 100%; max-height: 100%; border-radius: 10px; }
   .toast {
-    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom));
+    position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom));
     transform: translate(-50%, 140px);
     background: var(--card-2); border: 1px solid var(--border);
     padding: 12px 20px; border-radius: 999px;
     transition: transform .25s; z-index: 30; max-width: 90vw; text-align: center;
   }
   .toast.show { transform: translate(-50%, 0); }
+
+  /* ---------- Navegación inferior ---------- */
+  [hidden] { display: none !important; }
+  .nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 8;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(15,20,25,.97); border-top: 1px solid var(--border);
+  }
+  .tab {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    min-height: 58px; border: 1px solid transparent; border-radius: 12px;
+    background: transparent; color: var(--muted); font-weight: 700; font-size: .68rem; cursor: pointer; padding: 4px 2px;
+  }
+  .tab span { font-size: 1.35rem; line-height: 1; }
+  .tab.on { background: rgba(88,166,255,.16); color: var(--accent); border-color: rgba(88,166,255,.4); }
+
+  /* ---------- Paneles y textos ---------- */
+  .panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px; margin-top: 16px;
+  }
+  .ayuda { color: var(--muted); font-size: .92rem; margin: 0 0 14px; }
+  .sub { color: var(--muted); font-size: .88rem; }
+  .seg {
+    margin-top: 16px; padding: 12px 14px; border-radius: var(--radius);
+    background: rgba(227,179,65,.1); border: 1px solid rgba(227,179,65,.4);
+    color: var(--pendiente); font-size: .9rem;
+  }
+  .equipo {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 12px; margin-bottom: 14px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 10px; font-size: .95rem; word-break: break-word;
+  }
+  .mini {
+    min-height: 44px; padding: 0 14px; border-radius: 10px; flex: 0 0 auto;
+    background: transparent; border: 1px solid var(--border); color: var(--text); cursor: pointer; font-weight: 600;
+  }
+  .card-acc { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .card-acc .btn { margin-top: 0; min-height: 50px; font-size: .95rem; }
+
+  /* ---------- Chips ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip {
+    min-height: 44px; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text); font-size: .92rem; text-align: left;
+  }
+  .chip.on { background: rgba(88,166,255,.18); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  .chips.fijos { margin-bottom: 10px; }
+  .pill {
+    display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: .82rem; font-weight: 700;
+    background: rgba(88,166,255,.16); color: var(--accent);
+  }
+  #panelPistas { margin-top: 14px; }
+
+  /* ---------- Resultados de diagnóstico ---------- */
+  .preguntas {
+    margin: 0 0 14px; padding: 12px 14px; border-radius: 10px;
+    background: var(--bg); border: 1px dashed var(--border); font-size: .92rem;
+  }
+  .preguntas ul { margin: 6px 0 0; padding-left: 20px; }
+  .causa {
+    border: 1px solid var(--border); border-left: 5px solid var(--border);
+    border-radius: 12px; margin-bottom: 10px; background: var(--bg);
+  }
+  .causa.alta  { border-left-color: var(--desguazado); }
+  .causa.media { border-left-color: var(--pendiente); }
+  .causa.baja  { border-left-color: var(--muted); }
+  .causa summary {
+    list-style: none; cursor: pointer; padding: 12px 14px; min-height: 52px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .causa summary::-webkit-details-marker { display: none; }
+  .nv { align-self: flex-start; padding: 2px 10px; border-radius: 999px; font-size: .75rem; font-weight: 800; }
+  .nv.alta  { background: rgba(248,81,73,.16);  color: var(--desguazado); }
+  .nv.media { background: rgba(227,179,65,.16); color: var(--pendiente); }
+  .nv.baja  { background: rgba(139,152,168,.18); color: var(--muted); }
+  .ct { font-weight: 600; word-break: break-word; }
+  .cuerpo { padding: 0 14px 14px; }
+  .cuerpo p { margin: 0 0 8px; word-break: break-word; }
+  .cuerpo .mini { margin-top: 4px; }
+
+  /* ---------- Analizador de circuitos ---------- */
+  .comp {
+    border: 1px solid var(--border); border-left: 5px solid var(--border);
+    border-radius: 12px; padding: 12px; margin-bottom: 10px; background: var(--bg);
+  }
+  .comp.s-ok { border-left-color: var(--terminado); }
+  .comp.s-falta { border-left-color: var(--pendiente); }
+  .comp.s-danado { border-left-color: var(--desguazado); }
+  .comp.s-ilegible { border-left-color: var(--accent); }
+  .comp-cab { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+  .num {
+    flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; background: var(--card-2);
+    font-size: .8rem; font-weight: 800; color: var(--muted);
+  }
+  .comp-tit { min-width: 0; }
+  .comp-rol { color: var(--muted); font-size: .88rem; }
+  .comp select.est, .comp input.nota { width: 100%; min-height: 50px; margin-bottom: 8px; }
+  .comp input.nota {
+    padding: 12px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; outline: none;
+  }
+  .info summary { cursor: pointer; color: var(--accent); font-size: .9rem; min-height: 40px; display: flex; align-items: center; }
+  .info p { margin: 4px 0; font-size: .9rem; color: var(--muted); word-break: break-word; }
+
+  .flujo { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 14px; }
+  .paso {
+    padding: 4px 10px; border-radius: 8px; font-size: .75rem; font-weight: 700;
+    background: var(--card-2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .paso.s-ok { background: rgba(63,185,80,.16); color: var(--terminado); border-color: var(--terminado); }
+  .paso.s-falta { background: rgba(227,179,65,.16); color: var(--pendiente); border-color: var(--pendiente); }
+  .paso.s-danado { background: rgba(248,81,73,.16); color: var(--desguazado); border-color: var(--desguazado); }
+  .paso.s-ilegible { background: rgba(88,166,255,.16); color: var(--accent); border-color: var(--accent); }
+  .flecha { color: var(--muted); font-size: .8rem; }
+
+  .veredicto { padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--border); }
+  .veredicto p { margin: 6px 0 0; }
+  .veredicto ul { margin: 8px 0 0; padding-left: 20px; }
+  .veredicto.mal { background: rgba(248,81,73,.1); border-color: rgba(248,81,73,.5); }
+  .veredicto.med { background: rgba(227,179,65,.1); border-color: rgba(227,179,65,.5); }
+  .veredicto.bien { background: rgba(63,185,80,.1); border-color: rgba(63,185,80,.5); }
+  .bloque { margin-bottom: 14px; }
+  .bloque h3 { margin: 0 0 8px; font-size: 1rem; }
+  .bloque .item { padding: 10px 12px; margin-bottom: 8px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+  .bloque .item p { margin: 4px 0 0; font-size: .92rem; word-break: break-word; }
+  .bloque.falta .item { border-left: 4px solid var(--pendiente); }
+  .bloque.danado .item { border-left: 4px solid var(--desguazado); }
+  .bloque.ilegible .item { border-left: 4px solid var(--accent); }
+  .panel > .btn { margin-top: 8px; }
+
+  .barra { margin-bottom: 10px; }
+  .barra-t { display: flex; justify-content: space-between; gap: 10px; font-size: .92rem; margin-bottom: 4px; }
+  .barra-b { height: 10px; border-radius: 999px; background: var(--card-2); overflow: hidden; }
+  .barra-b span { display: block; height: 100%; background: var(--accent); }
+  .deduc { margin-top: 14px; }
+  .deduc > .btn { margin-top: 10px; }
+
+  /* ---------- Editor de circuitos ---------- */
+  .ed-comp { border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; background: var(--bg); }
+  .ed-cab { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .ed-cab .sp { flex: 1; }
+  .ed-comp .field { margin-bottom: 10px; }
+  .ed-comp input[type=text] { background: var(--card); }
+  .chk { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 4px 0 8px; color: var(--text); font-size: .92rem; font-weight: 600; }
+  .chk input { width: 22px; height: 22px; flex: 0 0 auto; }
+  #panelEditor > .btn { margin-top: 4px; }
+
+  /* ---------- Catálogo de componentes ---------- */
+  .cat-item { border: 1px solid var(--border); border-radius: 12px; background: var(--card); margin-top: 10px; overflow: hidden; }
+  .cat-item summary { list-style: none; display: flex; gap: 12px; align-items: center; padding: 10px; cursor: pointer; min-height: 76px; }
+  .cat-item summary::-webkit-details-marker { display: none; }
+  .cat-thumb { flex: 0 0 96px; }
+  .cat-thumb svg, .cat-grande svg { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .cat-tit { min-width: 0; }
+  .cat-tit strong { display: block; margin-bottom: 4px; word-break: break-word; }
+  .cat-tit .sub { margin-top: 4px; font-size: .82rem; word-break: break-word; }
+  .cat-cuerpo { padding: 0 12px 14px; }
+  .cat-top { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .cat-grande { flex: 1; max-width: 260px; }
+  .cat-sim { flex: 0 0 92px; text-align: center; color: var(--text); }
+  .cat-sim svg { width: 92px; height: 62px; display: block; }
+  .cat-sim span { font-size: .75rem; color: var(--muted); }
+  .campo { margin-bottom: 10px; }
+  .campo strong { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .campo p { margin: 2px 0 0; word-break: break-word; }
+  .mifoto { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .mifoto img { display: block; width: 100%; max-width: 320px; border-radius: 10px; margin: 8px 0; border: 1px solid var(--border); }
+  #cuentaCat { margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -195,12 +365,14 @@
       <h1>⚡ Inventario del Taller</h1>
       <span class="red" id="red">● En línea</span>
     </div>
-    <input class="search" id="buscar" type="search" placeholder="🔍 Buscar por nombre o marca..." autocomplete="off">
-    <div class="counter" id="contador"></div>
+    <div id="barraInv">
+      <input class="search" id="buscar" type="search" placeholder="🔍 Buscar por nombre o marca..." autocomplete="off">
+      <div class="counter" id="contador"></div>
+    </div>
   </div>
 </div>
 
-<main class="container">
+<main class="container vista" id="vista-inv">
 
   <div class="btn-row">
     <button class="btn btn-sec" id="btnExportar" type="button">⬇ Exportar a JSON</button>
@@ -263,6 +435,95 @@
   <div id="lista"></div>
 
 </main>
+
+<main class="container vista" id="vista-diag" hidden>
+  <div class="seg"><strong>⚠ Seguridad:</strong> desconecta de la red y descarga los capacitores grandes antes de tocar. Las fuentes conmutadas y las UPS tienen tensiones peligrosas. Si hay humo u olor a quemado, desenchufa de inmediato.</div>
+  <section class="panel">
+    <h2>🔧 Diagnóstico por síntomas</h2>
+    <p class="ayuda">Describe la falla con tus palabras. La app compara con reglas de reparación y ordena las causas de más a menos probable. Funciona sin internet.</p>
+    <div class="equipo" id="equipoDiag" hidden></div>
+    <div class="field">
+      <label for="selCircDiag">Tipo de circuito (opcional)</label>
+      <select id="selCircDiag"></select>
+    </div>
+    <div class="field">
+      <label for="sintoma">¿Qué le pasa al equipo?</label>
+      <textarea id="sintoma" placeholder="Ej. no enciende, no llega corriente, se quema el fusible…"></textarea>
+    </div>
+    <div class="chips" id="chipsSint"></div>
+    <button class="btn btn-primary" id="btnDiag" type="button">🔍 Diagnosticar</button>
+  </section>
+  <div id="resDiag"></div>
+</main>
+
+<main class="container vista" id="vista-circ" hidden>
+  <div class="seg"><strong>⚠ Seguridad:</strong> mide siempre con el equipo desconectado y los capacitores descargados, salvo las mediciones que exijan energía; en ese caso, con una sola mano y con cuidado.</div>
+  <section class="panel">
+    <h2>🔎 Analizador de circuitos</h2>
+    <p class="ayuda">Elige el circuito (o deduce cuál es por lo que ves en la placa) y marca el estado de cada pieza. La app dice qué falta, qué está dañado, cómo deducir lo ilegible y por dónde empezar.</p>
+    <div class="field">
+      <label for="selCirc">Circuito</label>
+      <select id="selCirc"></select>
+    </div>
+    <div class="btn-row" id="accionesCircuito" style="margin:0 0 12px">
+      <button class="btn btn-sec" id="btnNuevoCirc" type="button">➕ Crear circuito</button>
+      <button class="btn btn-sec" id="btnDuplicar" type="button" hidden>📑 Duplicar y editar</button>
+      <button class="btn btn-sec" id="btnEditar" type="button" hidden>✏️ Editar</button>
+      <button class="btn btn-danger" id="btnBorrar" type="button" hidden style="margin-top:0">🗑 Eliminar</button>
+    </div>
+    <button class="btn btn-sec" id="btnPistas" type="button">🧩 No sé cuál es: deducir por lo que veo</button>
+    <div id="panelPistas" hidden>
+      <p class="ayuda">Marca lo que ves en la placa:</p>
+      <div class="chips" id="chipsPistas"></div>
+      <button class="btn btn-primary" id="btnDeducir" type="button">Deducir circuito</button>
+      <div id="resDeduc"></div>
+    </div>
+  </section>
+  <section class="panel" id="panelEditor" hidden>
+    <h2 id="edTitulo">➕ Nuevo circuito</h2>
+    <p class="ayuda">Agrega los componentes en el orden en que fluye la energía o la señal (de la entrada a la salida). Así el análisis te dice por dónde empezar la reparación. Solo el nombre de cada componente es obligatorio.</p>
+    <div class="field">
+      <label for="edNombre">Nombre del circuito *</label>
+      <input id="edNombre" type="text" maxlength="80" placeholder="Ej. Cargador de batería 12 V">
+    </div>
+    <div class="field">
+      <label for="edDesc">Descripción</label>
+      <textarea id="edDesc" placeholder="Para qué equipos sirve y cómo fluye (ej. entrada → fusible → transformador → salida)"></textarea>
+    </div>
+    <div id="editorComps"></div>
+    <button class="btn btn-sec" id="btnAddComp" type="button">➕ Agregar componente</button>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnGuardarCirc" type="button">💾 Guardar circuito</button>
+      <button class="btn btn-sec" id="btnCancelarCirc" type="button">Cancelar</button>
+    </div>
+  </section>
+  <section class="panel" id="panelLista">
+    <div id="listaComp"></div>
+    <div class="btn-row" id="accionesCirc" hidden>
+      <button class="btn btn-primary" id="btnAnalizar" type="button">📋 Analizar</button>
+      <button class="btn btn-sec" id="btnLimpiar" type="button">Limpiar marcas</button>
+    </div>
+  </section>
+  <div id="resCirc"></div>
+</main>
+
+<main class="container vista" id="vista-comp" hidden>
+  <section class="panel">
+    <h2>📚 Catálogo de componentes</h2>
+    <p class="ayuda">Consulta cómo es cada componente, su símbolo, cómo identificarlo y probarlo, y de qué equipos rescatarlo. Las ilustraciones son esquemáticas: en cada ficha puedes agregar tu propia foto.</p>
+    <input class="search" id="buscarCat" type="search" placeholder="🔍 Nombre, código o equipo (ej. IRF, 104, UPS)" autocomplete="off">
+    <div class="chips" id="chipsCat" style="margin-top:12px"></div>
+    <div class="sub" id="cuentaCat"></div>
+  </section>
+  <div id="listaCat"></div>
+</main>
+
+<nav class="nav" aria-label="Secciones">
+  <button class="tab on" id="tab-inv" type="button" aria-selected="true"><span>📦</span>Inventario</button>
+  <button class="tab" id="tab-diag" type="button" aria-selected="false"><span>🔧</span>Diagnóstico</button>
+  <button class="tab" id="tab-circ" type="button" aria-selected="false"><span>🔎</span>Circuitos</button>
+  <button class="tab" id="tab-comp" type="button" aria-selected="false"><span>📚</span>Componentes</button>
+</nav>
 
 <div class="lightbox" id="lightbox"><img id="lightboxImg" alt="Foto ampliada"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -434,10 +695,18 @@
         card.appendChild(el('p', 'comp', eq.componentes));
       }
 
+      var acc = el('div', 'card-acc');
+      var btnD = el('button', 'btn btn-sec', '🔧 Diagnosticar');
+      btnD.type = 'button';
+      btnD.addEventListener('click', function () {
+        if (window.abrirDiagnostico) window.abrirDiagnostico(eq);
+      });
+      acc.appendChild(btnD);
       var btn = el('button', 'btn btn-danger', '🗑 Eliminar');
       btn.type = 'button';
       btn.addEventListener('click', function () { eliminar(eq.id, eq.nombre); });
-      card.appendChild(btn);
+      acc.appendChild(btn);
+      card.appendChild(acc);
 
       lista.appendChild(card);
     });
@@ -592,6 +861,1855 @@
 
   render();
 })();
+</script>
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, clase, texto) {
+    var n = document.createElement(tag);
+    if (clase) n.className = clase;
+    if (texto !== undefined) n.textContent = texto;
+    return n;
+  }
+  function norm(t) {
+    return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  var toastEl = $('toast'), toastT;
+  function aviso(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+  function copiar(texto) {
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = texto; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); aviso('Resultado copiado ✔'); } catch (e) { aviso('No se pudo copiar'); }
+      ta.remove();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(function () { aviso('Resultado copiado ✔'); }, fallback);
+    } else { fallback(); }
+  }
+
+  /* =====================================================================
+     PESTAÑAS
+     ===================================================================== */
+  var VISTAS = { inv: 'vista-inv', diag: 'vista-diag', circ: 'vista-circ', comp: 'vista-comp' };
+  function irA(v) {
+    Object.keys(VISTAS).forEach(function (k) {
+      $(VISTAS[k]).hidden = (k !== v);
+      $('tab-' + k).classList.toggle('on', k === v);
+      $('tab-' + k).setAttribute('aria-selected', k === v ? 'true' : 'false');
+    });
+    $('barraInv').hidden = (v !== 'inv');
+    window.scrollTo(0, 0);
+  }
+  Object.keys(VISTAS).forEach(function (k) {
+    $('tab-' + k).addEventListener('click', function () { irA(k); });
+  });
+
+  /* =====================================================================
+     BASE DE CONOCIMIENTO: CIRCUITOS
+     K(id, nombre, función, valores típicos, falla típica, prueba,
+       efecto si falta/falla, cómo deducirlo si es ilegible, [arrastra], crítico)
+     Los componentes van en orden de flujo (de la entrada hacia la salida).
+     ===================================================================== */
+  function K(id, n, r, v, f, p, e, d, a, c) {
+    return { id: id, n: n, r: r, v: v, f: f, p: p, e: e, d: d, a: a || [], c: !!c };
+  }
+  var CORTO = { lin: 'Fuente lineal', con: 'Fuente conmutada', ups: 'UPS', amp: 'Amplificador', rel: 'Etapa de relé' };
+
+  var CIRC = {
+    lin: {
+      n: 'Fuente lineal (transformador + regulador)',
+      desc: 'Eliminadores, cargadores antiguos, fuentes de banco. Flujo: fusible → transformador → puente → filtro → regulador → salida.',
+      comps: [
+        K('fusible', 'Fusible de entrada', 'Protege el primario del transformador.', '0.5–2 A, 250 V (lento o rápido según el equipo)', 'Abierto: no llega corriente. Casi siempre es síntoma de otra falla: no lo cambies sin buscar la causa.', 'Continuidad con el multímetro (debe sonar, ≈ 0 Ω).', 'Sin él no hay protección; si está abierto el equipo queda sin energía.', 'Va en serie con la entrada de red, tras el cable o interruptor. Si no se lee: potencia (W) ÷ tensión de red × 1.5.', ['puente', 'trafo'], 1),
+        K('trafo', 'Transformador reductor', 'Baja la red (110/220 V) a 6–24 V AC.', 'Secundario típico 9, 12, 15 o 24 V; 0.3–3 A', 'Primario abierto (sin salida) o espiras en corto (calienta mucho y quema el fusible).', 'Resistencia del primario (decenas a cientos de Ω; infinito = abierto) y tensión AC del secundario con el equipo conectado.', 'Sin transformador no hay tensión baja: salida de 0 V.', 'Lee la etiqueta (tensión y VA). Si no hay, mide el AC del secundario con precaución y elige la relación más cercana.', ['puente'], 1),
+        K('puente', 'Puente rectificador', 'Convierte la AC del secundario en DC pulsante.', '4 diodos 1N4007 (1 A) o 1N5408 (3 A), o puente KBPC/GBU de 2–10 A', 'Un diodo en corto (quema el fusible) o abierto (salida baja con zumbido de 100 Hz).', 'Modo diodo: ≈ 0.5 V en directa y OL en inversa en cada diodo.', 'Sin rectificador no hay DC: salida 0 V.', 'Está entre el secundario y el capacitor grande; terminales marcados ~ ~ + −.', ['filtro', 'fusible'], 1),
+        K('filtro', 'Capacitor de filtro', 'Alisa la tensión rectificada.', '1000–4700 µF; tensión ≥ 1.5 × (V secundario × 1.41)', 'Seco o abombado: mucho rizado, zumbido, la tensión cae con carga.', 'Capacímetro o probador ESR; mira si la tapa está abombada o hay líquido en la base.', 'Sin filtro la salida pulsa y el regulador no logra estabilizar.', 'Es el electrolítico más grande, con la banda (−) hacia tierra. Elige ≈ 1000 µF por amperio.', ['regulador'], 1),
+        K('regulador', 'Regulador de tensión', 'Estabiliza la salida (7805 = 5 V, 7812 = 12 V; LM317 es ajustable).', '78xx, 79xx, LM317, LM338', 'En corto interno (salida = entrada, peligroso para la carga) o abierto (0 V); calienta si no tiene disipador.', 'Con el equipo encendido: entrada ≥ salida + 2 V y salida fija al valor esperado.', 'Sin regulador la salida no es estable o no hay salida.', 'Tres patas (entrada, tierra, salida). En los 78xx los dos últimos dígitos son los voltios (7812 = 12 V).', ['capsalida'], 1),
+        K('capsalida', 'Capacitores de salida y desacople', 'Evitan oscilaciones y filtran ruido.', '10–470 µF + 100 nF cerámico', 'Secos o abiertos: ruido, oscilación, el regulador calienta.', 'Capacitancia/ESR; ante la duda, sustituir.', 'Sin ellos puede oscilar aunque a veces parezca funcionar.', 'Junto a las patas de entrada y salida del regulador.', [], 0),
+        K('led', 'LED indicador + resistencia', 'Muestra que hay salida.', 'LED 3–5 mm + 330 Ω–1 kΩ', 'LED o resistencia abiertos: no enciende aunque haya tensión.', 'Mide la tensión de salida antes de culpar al LED.', 'Solo pierdes el indicador.', 'R = (V salida − 2 V) ÷ 0.01 A.', [], 0)
+      ]
+    },
+
+    con: {
+      n: 'Fuente conmutada (cargador, PC, TV, router)',
+      desc: 'Cargadores, fuentes ATX, laptops, TV, routers. Flujo: fusible → NTC → puente → capacitor primario → IC PWM → MOSFET → transformador de ferrita → diodo secundario → capacitores de salida, con realimentación por optoacoplador y TL431. ⚠ El lado primario tiene ~310 V DC.',
+      comps: [
+        K('fusible', 'Fusible de entrada', 'Protege toda la fuente.', '1–5 A, 250 V', 'Abierto casi siempre por MOSFET o puente en corto.', 'Continuidad.', 'Sin él la fuente queda sin energía.', 'Al inicio de la línea de AC, junto al conector.', ['ntc', 'puente', 'mosfet'], 1),
+        K('varistor', 'Varistor MOV (protección)', 'Absorbe picos de tensión de la red.', '7D471K / 10D471K (≈ 275 V AC)', 'Quemado o agrietado por picos; puede llevarse el fusible.', 'Visual; resistencia muy alta (> 10 MΩ) en frío.', 'Sin él pierdes protección contra picos.', 'Disco azul o naranja en paralelo con la entrada AC.', [], 0),
+        K('ntc', 'Termistor NTC (limitador de arranque)', 'Limita la corriente al conectar.', '2.5–10 Ω (disco negro o verde)', 'Abierto: la fuente no arranca; puenteado: picos de corriente al conectar.', 'Continuidad (pocos ohmios en frío).', 'Abierto = no llega energía al puente.', 'Disco en serie con la entrada, antes del puente.', [], 1),
+        K('puente', 'Puente rectificador', 'Rectifica la red a ≈ 310 V DC.', 'KBP / GBU / DB107, 2–6 A, 600–1000 V', 'Diodo en corto: quema el fusible.', 'Modo diodo en cada diodo.', 'Sin rectificar no hay DC en el primario.', 'Entre la entrada AC y el capacitor primario.', ['cprim', 'fusible'], 1),
+        K('cprim', 'Capacitor primario (alta tensión)', 'Almacena ≈ 310 V DC. ⚠ Puede conservar carga peligrosa.', '100–680 µF, 400 V (200 V si la red es 110 V)', 'Seco o abombado: no arranca, hace clic o se apaga con carga.', 'Descargar con una resistencia y medir capacitancia/ESR.', 'Sin él el primario no recibe DC estable.', 'Es el electrolítico más grande, de 400 V. Capacidad ≈ 1–2 µF por vatio.', ['icpwm', 'mosfet'], 1),
+        K('arranque', 'Resistencias de arranque', 'Alimentan al IC PWM al inicio.', '47–470 kΩ, 0.5–2 W (a veces dos en serie)', 'Abiertas: el IC nunca recibe Vcc y no arranca.', 'Resistencia fuera de circuito y comparar con el valor impreso.', 'El IC no inicia: fuente muerta.', 'Salen del positivo del capacitor primario hacia el pin Vcc del IC.', [], 1),
+        K('icpwm', 'IC controlador PWM', 'Genera los pulsos que manejan el MOSFET.', 'UC3842/3843/3844/3845, TNY/TOP, VIPer, ICE, SG6848', 'Sin Vcc o dañado: no hay pulsos; suele morir junto con el MOSFET.', 'Vcc en su pin (≈ 8–16 V) y señal de compuerta con osciloscopio.', 'Sin IC no hay conmutación: salida 0 V.', 'Lee la marca (UC384x…) y busca la hoja de datos con ese código.', ['mosfet', 'arranque'], 1),
+        K('mosfet', 'MOSFET de potencia', 'Conmuta la corriente del primario.', '600–800 V (2N60, 7N60, K2645…), canal N', 'En corto drenador–fuente: quema el fusible y la resistencia de fuente.', 'Modo diodo y resistencia compuerta–fuente; reemplazar junto con el IC si hay dudas.', 'Sin MOSFET no se transfiere energía al secundario.', 'Transistor de 3 patas con disipador, junto al transformador; busca códigos tipo "xN60".', ['icpwm', 'fusible', 'snubber'], 1),
+        K('snubber', 'Red snubber / diodo de enclavamiento', 'Absorbe los picos del transformador al apagar el MOSFET.', 'Diodo UF4007/FR107 + R 47–100 kΩ + C 1–10 nF a 1 kV', 'Diodo en corto o capacitor abierto: el MOSFET sufre y se quema.', 'Modo diodo y valores de R/C.', 'Sin ella el MOSFET muere pronto.', 'En paralelo con el devanado primario del transformador.', [], 0),
+        K('trafohf', 'Transformador de ferrita', 'Aísla y transfiere energía al secundario.', 'Núcleo EE/EI/ER, 5–10 pines', 'Raro: espiras en corto o patas con soldadura fría.', 'Revisa soldaduras; continuidad de devanados.', 'Sin él no hay energía en el secundario.', 'El componente con núcleo cuadrado de ferrita entre primario y secundario.', [], 1),
+        K('diodosec', 'Diodo(s) del secundario', 'Rectifican la salida de baja tensión.', 'Schottky 5–20 A / 40–100 V (MBR, SR) o diodos rápidos (FR)', 'Corto o fuga: salida baja o nula y calienta.', 'Modo diodo; 0 V en ambos sentidos = corto.', 'Sin él no hay DC de salida.', 'Cerca de los capacitores de salida, con disipador pequeño; marcas MBR/SR.', ['csec'], 1),
+        K('csec', 'Capacitores de salida (baja ESR)', 'Filtran y estabilizan la salida.', '470–2200 µF, 10–35 V, baja ESR', 'La falla más común: abombados o secos → arranca y se apaga, "clic-clic", rizado alto.', 'Probador ESR o sustitución de prueba.', 'Sin ellos la salida es inestable o entra en protección.', 'Varios electrolíticos en la salida; su tensión debe ser ≥ 1.5 × la salida.', ['opto'], 1),
+        K('opto', 'Optoacoplador (realimentación)', 'Informa al IC del primario la tensión de salida, de forma aislada.', 'PC817, EL817, 4N35', 'Abierto: la salida se dispara a voltaje alto; en corto: la fuente se apaga.', 'Prueba con uno de repuesto o mide con la salida controlada.', 'Sin realimentación la tensión no se regula.', 'IC de 4 patas entre secundario y primario.', ['tl431'], 1),
+        K('tl431', 'Referencia TL431', 'Ajusta la tensión de salida.', 'TL431 / KA431 con dos resistencias divisoras', 'Defectuoso: salida alta, baja o inestable.', 'Mide la referencia de 2.5 V en su pin de referencia.', 'La salida pierde su referencia.', 'Transistor pequeño de 3 patas junto a los capacitores de salida; marca "431".', ['opto'], 1)
+      ]
+    },
+
+    ups: {
+      n: 'UPS (respaldo con batería)',
+      desc: 'UPS offline o línea interactiva de 12 V. Flujo: fusible → transformador → rectificador → cargador → batería → inversor → relé de transferencia → salida.',
+      comps: [
+        K('fusible', 'Fusible o breaker de entrada', 'Protege el equipo.', '5–15 A', 'Abierto: sin salida. Si salta el breaker hay un corto.', 'Continuidad.', 'Sin energía de entrada.', 'En el panel trasero o junto al cable de entrada.', ['varistor', 'trafo'], 1),
+        K('varistor', 'Varistor MOV', 'Absorbe picos de la red.', '14D471K (≈ 275 V)', 'Quemado por picos; puede quemar el fusible.', 'Visual y resistencia en frío.', 'Pierdes protección contra picos.', 'Disco en paralelo con la entrada.', [], 0),
+        K('trafo', 'Transformador principal', 'Baja la red para cargar y sube la tensión de batería en el inversor.', '110/220 V ↔ 12–15 V; 300–1000 VA', 'Espiras en corto o primario abierto; calienta y zumba.', 'Resistencia de los devanados y tensión del secundario en vacío.', 'No carga la batería ni genera salida en modo batería.', 'Es el componente más pesado; el secundario auxiliar da ≈ 14–17 V AC.', ['puente', 'fusible'], 1),
+        K('puente', 'Rectificador del cargador', 'Convierte la AC del transformador en DC para la batería.', 'Puente de 10–25 A o diodos de 3–10 A', 'Diodo abierto o en corto: no carga la batería.', 'Modo diodo.', 'La batería no se carga.', 'Entre el secundario auxiliar del transformador y el circuito de carga.', ['cargador'], 1),
+        K('cargador', 'Circuito cargador', 'Regula 13.6–13.8 V de flotación.', 'Regulador o LM317 + transistor de potencia, o PWM', 'Transistor en corto: sobrecarga e hincha la batería; abierto: no carga.', 'Mide la tensión en los bornes de la batería con la UPS conectada (≈ 13.6 V).', 'Sin regulación la batería no carga o se sobrecarga.', 'Transistor de potencia con disipador cerca de la batería.', ['bateria'], 1),
+        K('bateria', 'Batería de 12 V (plomo-ácido sellada)', 'Almacena la energía de respaldo.', '12 V, 7–9 Ah (también 17 Ah)', 'Sulfatada o agotada: es la causa n.º 1; no sostiene carga o la UPS no arranca.', 'Voltaje en reposo (12.6–13 V) y bajo carga (no debe caer de 11 V).', 'Sin batería no hay respaldo; algunas UPS no encienden.', 'Etiqueta lateral con voltaje y Ah; reemplaza por la misma capacidad.', ['cargador', 'fusbat'], 1),
+        K('fusbat', 'Fusible de batería', 'Protege el inversor.', '20–40 A (lámina o vidrio grande)', 'Abierto: no arranca en batería.', 'Continuidad.', 'No funciona en modo batería.', 'En el cable positivo de la batería.', [], 1),
+        K('reg5', 'Regulador de 5 V (lógica)', 'Alimenta al microcontrolador.', '7805 / 78L05 / LM317', 'Sin salida: sin control, sin pitidos ni respuesta.', 'Mide 5 V en su salida.', 'Sin lógica no hay supervisión.', 'Pequeño de 3 patas cerca del microcontrolador.', ['mcu'], 1),
+        K('mcu', 'Microcontrolador / control', 'Supervisa red, batería y alarma.', 'PIC / STM / MCU de 8–40 pines', 'Sin Vcc o sin reloj: pitidos, sin respuesta.', 'Vcc de 5 V y señal de cristal.', 'Sin control no hay transferencia ni alarmas.', 'El IC de lógica más grande, con un cristal cerca.', [], 1),
+        K('inversor', 'Inversor (MOSFET + driver)', 'Convierte los 12 V DC de la batería en ≈ 110/220 V AC.', 'MOSFET 40–100 V, 30–80 A (IRF3205, IRFZ44N) + driver', 'MOSFET en corto: quema el fusible de batería; pitido continuo.', 'Modo diodo en cada MOSFET y resistencia compuerta–fuente.', 'No hay salida en modo batería.', 'Grupo de transistores con disipador cerca del transformador.', ['fusbat', 'mcu'], 1),
+        K('rele', 'Relé de transferencia', 'Conmuta entre red y batería.', '12 V, 10–16 A, SPDT (JQX, SRD)', 'Contactos pegados o quemados, o bobina abierta: sin transferencia (no hace "clic").', 'Clic al quitar la red; continuidad de contactos y bobina (≈ 100–400 Ω).', 'No hay transferencia: apagón o sin salida.', 'El relé más grande del equipo.', [], 1),
+        K('buzzer', 'Zumbador / alarma', 'Avisa de fallas.', 'Piezo o magnético, 5–12 V', 'Mudo o siempre sonando.', 'Aplica 5–12 V directo.', 'Solo pierdes la alarma.', 'Disco o cilindro negro cerca del control.', [], 0)
+      ]
+    },
+
+    amp: {
+      n: 'Amplificador de audio',
+      desc: 'Amplificadores, minicomponentes, receptores. Flujo: fusible → transformador → puente → filtros → entrada → preamplificador → drivers → salida → protección → parlante.',
+      comps: [
+        K('fusible', 'Fusible de red', 'Protege el transformador.', '1–5 A', 'Abierto: sin energía; si vuelve a quemarse hay un corto.', 'Continuidad.', 'Sin energía.', 'Panel trasero o junto al cable de red.', ['puente', 'trafo'], 1),
+        K('trafo', 'Transformador de la fuente', 'Entrega la tensión de alimentación (a veces con toma central ±).', '2 × 15–40 V AC, 1–10 A', 'Primario abierto o espiras en corto.', 'Resistencia del primario y tensión de los secundarios.', 'Sin energía en el amplificador.', 'El componente más pesado de la fuente.', ['puente'], 1),
+        K('puente', 'Puente rectificador', 'Convierte la AC en DC.', '35 A / 400 V o 4 diodos de 5 A', 'Diodo en corto: quema el fusible; abierto: zumbido.', 'Modo diodo.', 'Sin DC no hay alimentación.', 'Junto a los capacitores de filtro.', ['filtro'], 1),
+        K('filtro', 'Capacitores de filtro de fuente', 'Alisan la alimentación de potencia.', '4700–10000 µF, 35–63 V (dos para ±)', 'Secos: zumbido, poca potencia y distorsión.', 'Capacímetro/ESR y tensión ± con el equipo encendido.', 'Sin ellos hay zumbido fuerte y poca potencia.', 'Los dos electrolíticos más grandes del equipo.', ['salida'], 1),
+        K('entrada', 'Entrada: acoplo + potenciómetro', 'Conecta la señal y regula el volumen.', 'Capacitor 1–10 µF, potenciómetro 10–100 kΩ', 'Potenciómetro sucio: crepita; capacitor abierto: sin sonido.', 'Prueba el potenciómetro con el multímetro mientras lo giras.', 'Sin entrada no llega señal.', 'Entre el jack RCA y la primera etapa.', ['preamp'], 1),
+        K('preamp', 'Etapa de entrada / preamplificador', 'Amplifica la señal pequeña antes de la potencia.', 'Par diferencial o IC (TL072, NE5532)', 'Sin polarización: silencio o distorsión.', 'Tensiones DC de las patas del IC/transistores.', 'Sin preamplificador no hay señal para la potencia.', 'Transistores pequeños o IC de 8 patas, cerca de la entrada.', ['driver'], 1),
+        K('driver', 'Transistores driver', 'Excitan la etapa de salida.', 'BD139/BD140, 2SC/2SA, TIP31/32', 'Abiertos o en corto: silencio o DC en la salida.', 'Modo diodo y ganancia.', 'La etapa de salida no se excita.', 'Pares de transistores medianos entre preamplificador y salida.', ['salida'], 1),
+        K('salida', 'Transistores o IC de salida', 'Entregan la potencia al parlante.', '2SC5200/2SA1943, TIP35/36, MJ15024/25, TDA2030, LM3886', 'En corto: DC en el parlante y fusibles quemados; abiertos: sin audio.', 'Modo diodo entre todos los terminales.', 'Sin salida no hay potencia.', 'Transistores grandes en el disipador (o un IC de 5 patas).', ['remisor', 'driver'], 1),
+        K('remisor', 'Resistencias de emisor/fuente', 'Estabilizan la corriente de salida.', '0.22–0.47 Ω, 5 W (cerámicas)', 'Abiertas: etapa de potencia sin corriente.', 'Mide con el multímetro; debe leer lo marcado.', 'La etapa queda muerta o inestable.', 'Cerámicas blancas junto a los transistores de salida.', [], 1),
+        K('bias', 'Ajuste de reposo (bias) y diodos térmicos', 'Mantiene la corriente de reposo de la salida.', 'Trimmer + 2 diodos o transistor térmico', 'Mal ajuste: distorsión de cruce o sobrecalentamiento.', 'Mide la corriente de reposo (≈ 20–50 mA) con el trimmer.', 'Distorsión o calentamiento excesivo.', 'Un trimmer pequeño cerca de los drivers.', [], 0),
+        K('proteccion', 'Protección del parlante (relé DC)', 'Conecta el parlante solo si no hay DC ni cortos.', 'Relé 12–24 V + transistores', 'No conecta: sin sonido; contactos oxidados.', 'Escucha el clic al encender; mide DC en la salida.', 'Sin conexión no suena.', 'Relé entre la salida y los bornes del parlante.', [], 1),
+        K('disipador', 'Disipador y pasta térmica', 'Evita el sobrecalentamiento.', 'Pasta térmica + aislantes de mica', 'Sin contacto: se recalienta y corta.', 'Revisa la mica y el apriete.', 'Sobrecalentamiento y corte térmico.', 'Barra de aluminio de los transistores de salida.', [], 0)
+      ]
+    },
+
+    rel: {
+      n: 'Etapa de relé con transistor',
+      desc: 'Módulos de control, alarmas, temporizadores. Flujo: señal de control → resistencia de base → transistor → bobina del relé (con diodo) → contactos.',
+      comps: [
+        K('fuente', 'Alimentación de la etapa', 'Da 5/12/24 V a la bobina.', '5, 12 o 24 V DC', 'Sin tensión: el relé no actúa.', 'Mide la tensión en la bobina.', 'Sin alimentación no hay actuación.', 'Entrada de energía de la placa.', [], 1),
+        K('entrada', 'Señal de control', 'Ordena activar el relé (MCU, sensor, interruptor).', '3.3–12 V', 'No llega señal: el relé no se activa.', 'Mide la señal con el multímetro al provocarla.', 'No hay orden de activación.', 'Pista que llega a la resistencia de base.', ['rbase'], 1),
+        K('rbase', 'Resistencia de base', 'Limita la corriente al transistor.', '1–10 kΩ', 'Abierta: el transistor no recibe señal.', 'Mide en circuito apagado.', 'El transistor no se activa.', 'Entre la señal de control y la base.', ['transistor'], 1),
+        K('transistor', 'Transistor driver (NPN)', 'Maneja la corriente de la bobina.', 'BC547, 2N2222, 2N3904, BD135, TIP120', 'Abierto o en corto: relé muerto o siempre activo.', 'Modo diodo base–emisor y base–colector.', 'El relé no actúa o no suelta.', 'Transistor pequeño de 3 patas junto al relé.', ['diodo'], 1),
+        K('diodo', 'Diodo de rueda libre', 'Absorbe el pico de la bobina al soltar.', '1N4007 o 1N4148 en paralelo con la bobina (cátodo al +)', 'En corto: la bobina no activa; abierto: el transistor muere por picos.', 'Modo diodo.', 'Sin él el transistor se daña con el tiempo.', 'En paralelo con los terminales de la bobina.', [], 0),
+        K('bobina', 'Bobina del relé', 'Mueve los contactos.', '5, 12 o 24 V; 50–400 Ω', 'Abierta: no hace clic.', 'Resistencia entre los pines de la bobina.', 'No actúa.', 'Pines marcados en el cuerpo del relé.', [], 1),
+        K('contactos', 'Contactos del relé', 'Conmutan la carga.', 'SPDT 5–16 A', 'Quemados o pegados: no conmuta o queda pegado.', 'Continuidad con la bobina activada y desactivada.', 'La carga no se controla.', 'Terminales COM, NA y NC del relé.', [], 1)
+      ]
+    }
+  };
+
+  /* Circuitos propios del usuario (guardados en el teléfono) */
+  var CLAVE_U = 'inventario_circ_user_v1';
+  var propios = {};
+  function limpiarCirc(o) {
+    if (!o || typeof o !== 'object' || typeof o.n !== 'string' || !Array.isArray(o.comps)) return null;
+    var t = function (x, m) { return String(x == null ? '' : x).slice(0, m || 400); };
+    var vistos = {};
+    var comps = o.comps.filter(function (c) { return c && typeof c === 'object' && t(c.n, 80).trim(); })
+      .slice(0, 60).map(function (c, i) {
+        var id = t(c.id, 30) || ('c' + i);
+        while (vistos[id]) id += 'x';
+        vistos[id] = true;
+        return K(id, t(c.n, 80), t(c.r), t(c.v), t(c.f), t(c.p), t(c.e), t(c.d), [], c.c);
+      });
+    if (!comps.length || !t(o.n, 80).trim()) return null;
+    return { n: t(o.n, 80), desc: t(o.desc, 600), comps: comps };
+  }
+  try {
+    var guardados = JSON.parse(localStorage.getItem(CLAVE_U)) || {};
+    Object.keys(guardados).forEach(function (id) {
+      var c = limpiarCirc(guardados[id]);
+      if (c && id.indexOf('u_') === 0) { propios[id] = c; CIRC[id] = c; CORTO[id] = c.n; }
+    });
+  } catch (e) { propios = {}; }
+
+  /* Pistas para deducir el circuito: pesos por circuito y componente asociado */
+  function P(id, t, w, m) { return { id: id, t: t, w: w, m: m || {} }; }
+  var PISTAS = [
+    P('trfe', 'Transformador de hierro, pesado (láminas)', { lin: 3, ups: 3, amp: 2 }, { lin: 'trafo', ups: 'trafo', amp: 'trafo' }),
+    P('trhf', 'Transformador pequeño de ferrita (muchos pines)', { con: 4 }, { con: 'trafohf' }),
+    P('puente', 'Puente de diodos o 4 diodos juntos', { lin: 1, con: 1, ups: 1, amp: 1 }, { lin: 'puente', con: 'puente', ups: 'puente', amp: 'puente' }),
+    P('fus', 'Fusible', { lin: 1, con: 1, ups: 1, amp: 1 }, { lin: 'fusible', con: 'fusible', ups: 'fusible', amp: 'fusible' }),
+    P('cap400', 'Electrolítico grande de 400 V (o 200 V)', { con: 4 }, { con: 'cprim' }),
+    P('opto', 'Optoacoplador (IC de 4 patas, PC817)', { con: 3 }, { con: 'opto' }),
+    P('tl431', 'TL431 o "431" (3 patas, pequeño)', { con: 3 }, { con: 'tl431' }),
+    P('icpwm', 'IC controlador PWM (UC384x, TNY, VIPer…)', { con: 4 }, { con: 'icpwm' }),
+    P('ntc', 'Disco negro NTC en la entrada', { con: 2 }, { con: 'ntc' }),
+    P('dsec', 'Diodo Schottky con disipador en el secundario', { con: 2 }, { con: 'diodosec' }),
+    P('mov', 'Varistor (disco azul o naranja)', { con: 1, ups: 1 }, { con: 'varistor', ups: 'varistor' }),
+    P('bat', 'Batería de 12 V (plomo-ácido sellada)', { ups: 5 }, { ups: 'bateria' }),
+    P('releg', 'Relé grande (10–16 A)', { ups: 3 }, { ups: 'rele' }),
+    P('mcu', 'Microcontrolador con cristal y display/LEDs', { ups: 2 }, { ups: 'mcu' }),
+    P('reg78', 'Regulador de 3 patas (7805, 7812, LM317…)', { lin: 4, ups: 1 }, { lin: 'regulador', ups: 'reg5' }),
+    P('elecg', 'Electrolíticos grandes de 25–63 V (1000–10000 µF)', { lin: 2, amp: 2 }, { lin: 'filtro', amp: 'filtro' }),
+    P('mosdis', 'Grupo de MOSFET o transistores de potencia con disipador', { ups: 2, amp: 1, con: 1 }, { ups: 'inversor', amp: 'salida', con: 'mosfet' }),
+    P('icaudio', 'IC de audio (TDA, LM3886…) o transistores 2SC5200/2SA1943', { amp: 5 }, { amp: 'salida' }),
+    P('remis', 'Resistencias cerámicas de 0.22–0.47 Ω (5 W)', { amp: 3 }, { amp: 'remisor' }),
+    P('parl', 'Salida a parlante con relé de protección', { amp: 3 }, { amp: 'proteccion' }),
+    P('pot', 'Potenciómetro de volumen o entradas RCA/jack', { amp: 2 }, { amp: 'entrada' }),
+    P('relep', 'Relé pequeño (5/12 V) con transistor', { rel: 4 }, { rel: 'bobina' }),
+    P('transp', 'Transistor pequeño (BC547, 2N2222…)', { rel: 2, amp: 1 }, { rel: 'transistor' }),
+    P('dfly', 'Diodo en paralelo con la bobina del relé', { rel: 2 }, { rel: 'diodo' })
+  ];
+
+  /* =====================================================================
+     BASE DE CONOCIMIENTO: SÍNTOMAS
+     C(causa, prob 1-3, [circuitos]|null, componente|{circ:comp}|null, cómo comprobar)
+     ===================================================================== */
+  function C(t, p, c, k, q) { return { t: t, p: p, c: c, k: k, q: q }; }
+  function S(id, t, claves, preguntas, causas) {
+    return { id: id, t: t, k: claves.map(norm), q: preguntas, c: causas };
+  }
+  var SINTOMAS = [
+    S('noenc', 'No enciende / no arranca',
+      ['no enciende', 'no prende', 'no arranca', 'no da senal', 'no funciona', 'esta muerto', 'sin vida', 'no responde', 'no da nada', 'apagado'],
+      ['¿Hay algún LED, display o ventilador que se mueva aunque sea un instante?', '¿El fusible de entrada está sano? (mide continuidad)', '¿Huele a quemado o ves componentes ennegrecidos?'],
+      [
+        C('Sin tensión en la toma, o cable/enchufe/conector de entrada dañado', 3, null, null, 'Prueba otra toma con un equipo que funcione y revisa la continuidad del cable moviéndolo cerca del enchufe y del conector.'),
+        C('Fusible de entrada abierto', 3, null, 'fusible', 'Mide continuidad. Si está abierto, busca primero el cortocircuito (puente, MOSFET, transformador) antes de poner otro; nunca uno de mayor amperaje.'),
+        C('Interruptor o botón de encendido defectuoso', 2, null, null, 'Con el equipo desconectado, mide continuidad al accionarlo (o puentéalo para probar).'),
+        C('Termistor NTC abierto', 2, ['con'], 'ntc', 'Con el equipo desconectado mide el disco NTC: debe dar pocos ohmios. Abierto = no llega energía al puente.'),
+        C('Resistencias de arranque abiertas o IC PWM sin alimentación', 2, ['con'], 'arranque', 'Mide el voltaje en el pin Vcc del IC (≈ 8–16 V). Si es 0 V y el capacitor primario tiene ≈ 300 V, revisa las resistencias de arranque.'),
+        C('Capacitor primario o de salida seco o abombado', 2, ['con'], 'cprim', 'Busca tapas abombadas; descarga y mide capacitancia/ESR.'),
+        C('Transformador con primario abierto o puente rectificador abierto', 2, ['lin', 'ups', 'amp'], 'trafo', 'Mide la continuidad del primario y el modo diodo del puente.'),
+        C('Batería agotada: la UPS no arranca en frío', 3, ['ups'], 'bateria', 'Mide la batería (≥ 12 V en reposo) e intenta arrancar con la red conectada.'),
+        C('Fusible de batería abierto', 2, ['ups'], 'fusbat', 'Continuidad en el fusible del cable positivo de la batería.'),
+        C('Regulador de 5 V sin salida (la lógica no arranca)', 2, ['ups'], 'reg5', 'Mide la salida del regulador: 0 V con entrada presente indica que está dañado.'),
+        C('Sin tensión ± en la fuente del amplificador', 2, ['amp'], 'filtro', 'Mide la tensión en los capacitores de filtro; si es 0 V, sigue hacia atrás hasta el puente y el transformador.'),
+        C('Falta alimentación de la etapa de relé', 2, ['rel'], 'fuente', 'Mide la tensión de alimentación en la bobina y en el transistor.')
+      ]),
+    S('nocorr', 'No llega corriente / sin voltaje de salida',
+      ['no llega corriente', 'no llega energia', 'sin corriente', 'no hay corriente', 'sin voltaje', 'no hay voltaje', 'no hay tension', 'sin tension', 'no sale voltaje', 'no hay salida', 'sin salida', 'salida cero', '0 v', '0v', 'no llega voltaje'],
+      ['¿Hay tensión en la entrada (después del fusible)?', '¿Hay tensión en el capacitor grande después del puente?', '¿La salida da 0 V también sin carga conectada?'],
+      [
+        C('Cable de red, enchufe o conector de entrada cortado', 3, null, null, 'Prueba continuidad del cable moviéndolo; revisa el conector.'),
+        C('Fusible abierto', 3, null, 'fusible', 'Continuidad; si está abierto, busca el corto antes de reponerlo.'),
+        C('Puente rectificador abierto', 2, ['lin', 'con', 'ups', 'amp'], 'puente', 'Modo diodo en cada diodo del puente.'),
+        C('Transformador con primario abierto o secundario en corto', 2, ['lin', 'ups', 'amp'], 'trafo', 'Mide la resistencia del primario y la tensión del secundario.'),
+        C('Regulador dañado: 0 V en la salida con entrada presente', 3, ['lin'], 'regulador', 'Mide entrada y salida del regulador con el equipo encendido.'),
+        C('Diodo del secundario en corto o abierto', 3, ['con'], 'diodosec', 'Modo diodo; revisa también los capacitores de salida.'),
+        C('La fuente está en protección por un corto en la carga', 2, ['con', 'lin'], null, 'Desconecta la carga y mide de nuevo; si la tensión reaparece, el problema está en la carga.'),
+        C('Pista cortada, soldadura fría o conector flojo', 2, null, null, 'Inspección con lupa; resuelda transformador, conectores y jack de salida.'),
+        C('Falla del inversor o del fusible de batería (en modo batería)', 2, ['ups'], 'inversor', 'Comprueba el fusible de batería y los MOSFET del inversor.')
+      ]),
+    S('fusible', 'Se quema el fusible',
+      ['fusible', 'se quema', 'revienta', 'se funde', 'quema el fusible', 'vuela el fusible', 'se funden', 'salta el fusible'],
+      ['¿Se quema al conectar o pasado un rato?', '¿Hay algún componente visiblemente quemado cerca de la entrada?'],
+      [
+        C('Puente rectificador en corto', 3, ['lin', 'con', 'ups', 'amp'], 'puente', 'Modo diodo; un diodo con 0 V en ambos sentidos está en corto.'),
+        C('MOSFET de potencia en corto (suele llevarse también la resistencia de fuente)', 3, ['con'], 'mosfet', 'Mide drenador–fuente con el equipo apagado; reemplaza la resistencia de fuente y revisa el IC PWM.'),
+        C('Capacitor primario en corto', 2, ['con'], 'cprim', 'Con el equipo apagado, mide resistencia entre sus terminales.'),
+        C('Transformador con espiras en corto', 2, ['lin', 'ups', 'amp'], 'trafo', 'Calienta mucho sin carga y zumba; compara su consumo en vacío.'),
+        C('Varistor en corto', 2, ['con', 'ups'], 'varistor', 'Visual: quemado o con grieta; mide su resistencia.'),
+        C('Inversor con MOSFET en corto (fusible de batería)', 3, ['ups'], 'inversor', 'Modo diodo en cada MOSFET; no repongas el fusible sin cambiar los dañados.'),
+        C('Transistores de salida en corto', 3, ['amp'], 'salida', 'Mide entre los terminales de cada transistor de salida; revisa también las resistencias de emisor.'),
+        C('Fusible de valor o tipo incorrecto, o sobrecarga prolongada', 1, null, 'fusible', 'Verifica amperaje y tipo (rápido o lento) del original.')
+      ]),
+    S('calienta', 'Calienta o huele a quemado',
+      ['calienta', 'caliente', 'sobrecalienta', 'se calienta', 'huele a quemado', 'humo', 'olor a quemado', 'quemado', 'echa humo', 'recalienta'],
+      ['¿Qué componente calienta? (toca con cuidado o usa un termómetro)', '¿Calienta también sin carga conectada?'],
+      [
+        C('Cortocircuito o sobrecarga aguas abajo', 3, null, null, 'Desconecta la carga y observa si baja la temperatura; mide el consumo.'),
+        C('Capacitor de filtro seco: el rizado alto recalienta todo', 2, ['lin', 'amp', 'ups'], 'filtro', 'Mide capacitancia/ESR y el rizado con osciloscopio.'),
+        C('Regulador con mucha caída de tensión o sin disipador', 2, ['lin'], 'regulador', 'Potencia disipada = (V entrada − V salida) × corriente.'),
+        C('Transformador con espiras en corto', 3, ['lin', 'ups', 'amp'], 'trafo', 'Se calienta sin carga y zumba; compara el consumo en vacío.'),
+        C('Resistencia de arranque o red snubber sobrecalentando', 2, ['con'], 'snubber', 'Mide resistencias y comprueba el diodo del snubber.'),
+        C('MOSFET o transistores de potencia con fuga o sin pasta térmica', 2, ['con', 'ups', 'amp'], { con: 'mosfet', ups: 'inversor', amp: 'salida' }, 'Comprueba el aislante de mica, la pasta y el apriete; mide fugas con el multímetro.'),
+        C('Mala corriente de reposo (bias) en la etapa de salida', 2, ['amp'], 'bias', 'Mide la corriente de reposo y reajusta el trimmer.'),
+        C('Batería sulfatada que se calienta al cargar', 2, ['ups'], 'bateria', 'Toca la batería después de cargar; si está muy caliente, cámbiala.')
+      ]),
+    S('zumbido', 'Zumbido, ruido o silbido',
+      ['zumbido', 'zumba', 'hum', 'ruido', 'ronquido', 'chilla', 'silba', 'pitido agudo', 'vibra', 'chirrido', 'sonido raro'],
+      ['¿El ruido cambia al cambiar la carga o el volumen?', '¿Viene del transformador o de la placa?'],
+      [
+        C('Capacitor de filtro seco: zumbido de 50/60 Hz', 3, ['lin', 'amp', 'ups'], 'filtro', 'Mide capacitancia/ESR y observa el rizado.'),
+        C('Láminas del transformador flojas', 2, ['lin', 'ups', 'amp'], 'trafo', 'Con el equipo apagado, presiona el núcleo; aprieta tornillos o barniza.'),
+        C('Fuente conmutada reiniciándose por sobrecarga o capacitores de salida secos', 3, ['con'], 'csec', 'Sustituye los capacitores de salida y verifica el diodo del secundario.'),
+        C('Realimentación inestable (optoacoplador o TL431)', 2, ['con'], 'opto', 'Prueba con repuestos y mide la referencia de 2.5 V.'),
+        C('Bucle de tierra o mala conexión de entrada', 2, ['amp'], 'entrada', 'Prueba con otra fuente de señal y otro cable.'),
+        C('Ventilador con rodamiento seco', 1, null, null, 'Gira el ventilador a mano y lubrica o cámbialo.')
+      ]),
+    S('apaga', 'Se apaga o se reinicia solo / falla intermitente',
+      ['se apaga', 'se reinicia', 'reinicia', 'se resetea', 'intermitente', 'a veces', 'se corta', 'parpadea', 'se apaga solo', 'se va la luz', 'falla a ratos'],
+      ['¿Falla al moverlo o golpearlo?', '¿Falla en frío o cuando se calienta?'],
+      [
+        C('Capacitores de salida con ESR alta (falla clásica)', 3, ['con'], 'csec', 'Sustituye los capacitores de salida; mide ESR si tienes probador.'),
+        C('Soldaduras frías en conectores, transformador o jack', 3, null, null, 'Observa con lupa y resuelda; mueve el equipo y comprueba si falla.'),
+        C('Protección térmica por mal disipador o ventilador', 2, null, null, 'Limpia el polvo, cambia la pasta térmica y verifica el ventilador.'),
+        C('Batería débil: la tensión cae al pasar a respaldo', 3, ['ups'], 'bateria', 'Prueba la batería bajo carga; si cae de 11 V, está agotada.'),
+        C('Contactos del relé degradados', 2, ['ups', 'rel'], { ups: 'rele', rel: 'contactos' }, 'Mide la continuidad con el relé activado y mueve el equipo.'),
+        C('Capacitor primario seco', 2, ['con'], 'cprim', 'Mide capacitancia/ESR del capacitor de 400 V.'),
+        C('Regulador entrando en protección térmica', 2, ['lin'], 'regulador', 'Comprueba si se apaga al calentar; revisa el disipador.')
+      ]),
+    S('clic', 'Hace clic o "tic-tic" repetido',
+      ['clic', 'tic tic', 'click', 'chasquido', 'hipo', 'tac tac', 'hace tic', 'tic'],
+      ['¿El clic es continuo (cada 1–2 segundos) o solo al encender?'],
+      [
+        C('Fuente conmutada reiniciándose por corto o sobrecarga en el secundario', 3, ['con'], 'diodosec', 'Desconecta la carga: si arranca, el problema es la carga; si no, revisa el diodo del secundario.'),
+        C('Capacitores de salida secos', 3, ['con'], 'csec', 'Sustituye los capacitores de baja ESR de la salida.'),
+        C('Optoacoplador o TL431 defectuoso: protección por sobretensión', 2, ['con'], 'opto', 'Prueba con repuestos y mide la salida sin carga.'),
+        C('Relé de transferencia conmutando por batería baja o sobrecarga', 3, ['ups'], 'rele', 'Prueba la batería y desconecta cargas para ver si cesa.'),
+        C('Relé que no recibe suficiente tensión en la bobina', 2, ['rel'], 'transistor', 'Mide la tensión en la bobina con el relé activado.'),
+        C('Relé de protección del parlante oscilando por DC en la salida', 2, ['amp'], 'proteccion', 'Mide DC en la salida del amplificador sin parlante conectado.')
+      ]),
+    S('vbajo', 'Voltaje bajo / cae con carga',
+      ['voltaje bajo', 'tension baja', 'baja tension', 'menos voltaje', 'cae el voltaje', 'cae la tension', 'poco voltaje', 'no llega a', 'cae con carga', 'baja el voltaje'],
+      ['¿Cuánto mide sin carga y cuánto con carga?'],
+      [
+        C('Capacitor de filtro o de salida seco', 3, ['lin', 'con', 'amp'], { lin: 'filtro', con: 'csec', amp: 'filtro' }, 'Mide capacitancia/ESR y el rizado.'),
+        C('Diodo con fuga (rectificador o del secundario)', 2, ['lin', 'con', 'ups'], { lin: 'puente', con: 'diodosec', ups: 'puente' }, 'Modo diodo y revisa si calienta sin carga.'),
+        C('La carga consume más de lo que entrega la fuente', 2, null, null, 'Mide la corriente de la carga y compárala con la capacidad de la fuente.'),
+        C('Regulador defectuoso o con mucha caída', 2, ['lin'], 'regulador', 'Mide entrada y salida con carga.'),
+        C('Transformador con espiras en corto (cae con carga)', 2, ['lin', 'ups'], 'trafo', 'Compara la tensión del secundario en vacío y con carga.'),
+        C('Realimentación fuera de valor (TL431 o resistencias divisoras)', 2, ['con'], 'tl431', 'Mide la referencia de 2.5 V y las resistencias del divisor.'),
+        C('Batería débil: la UPS cae con carga', 2, ['ups'], 'bateria', 'Mide la batería en reposo y bajo carga.')
+      ]),
+    S('valto', 'Voltaje alto / se dispara',
+      ['voltaje alto', 'tension alta', 'sube el voltaje', 'sobretension', 'quema lo que conecto', 'mucho voltaje', 'sube la tension', 'se dispara', 'voltaje de mas'],
+      ['⚠ ¿Mide más que el valor de la etiqueta sin carga?'],
+      [
+        C('Optoacoplador abierto o TL431 dañado (se pierde la realimentación)', 3, ['con'], 'opto', 'Mide la referencia del TL431 y prueba el opto; desconecta cualquier carga antes de encender.'),
+        C('Regulador en corto interno: sale la tensión de entrada', 3, ['lin'], 'regulador', 'Comprueba si la salida es igual a la entrada; cambia el regulador antes de conectar la carga.'),
+        C('Cargador sin control: transistor en corto', 3, ['ups'], 'cargador', 'Mide el voltaje en la batería (no debe pasar de 14 V).'),
+        C('Resistencias del divisor de realimentación alteradas', 2, ['con', 'lin'], null, 'Mide las resistencias del divisor y compáralas con las marcadas.')
+      ]),
+    S('nocarga', 'No carga / la batería dura poco',
+      ['no carga', 'bateria no carga', 'no carga la bateria', 'bateria se agota', 'dura poco', 'no aguanta', 'no respalda', 'respaldo corto', 'se descarga rapido', 'no mantiene', 'bateria muerta'],
+      ['¿Qué voltaje mide la batería con la UPS conectada a la red?'],
+      [
+        C('Batería sulfatada o agotada (la causa más común)', 3, null, 'bateria', 'Voltaje en reposo (12.6–13 V) y bajo carga (no debe caer de 11 V). Si falla, cámbiala.'),
+        C('Cargador sin salida o con transistor dañado', 3, ['ups'], 'cargador', 'Con la UPS conectada, mide el voltaje en los bornes de la batería (≈ 13.6 V).'),
+        C('Rectificador del cargador o transformador dañado', 2, ['ups'], 'puente', 'Modo diodo en el rectificador y tensión del secundario auxiliar.'),
+        C('Bornes sulfatados o cable flojo', 2, ['ups'], 'bateria', 'Limpia los bornes y revisa los terminales.'),
+        C('Fusible de batería abierto', 2, ['ups'], 'fusbat', 'Continuidad en el fusible.')
+      ]),
+    S('nosuena', 'No suena / sin audio',
+      ['no suena', 'sin sonido', 'sin audio', 'no se escucha', 'mudo', 'no hay sonido', 'no da sonido', 'no hay audio', 'sin volumen'],
+      ['¿Enciende el equipo y hace "clic" el relé de protección?', '¿Falla en ambos canales o solo en uno?'],
+      [
+        C('La protección del parlante no conecta el relé', 3, ['amp'], 'proteccion', 'Escucha el clic de conexión; mide la tensión del relé y si hay DC en la salida.'),
+        C('Transistores o IC de salida abiertos o dañados', 3, ['amp'], 'salida', 'Mide con el multímetro en modo diodo y reemplaza el par completo.'),
+        C('Resistencias de emisor abiertas', 2, ['amp'], 'remisor', 'Mide cada resistencia: debe leer lo marcado.'),
+        C('Falta tensión ± en la fuente', 3, ['amp'], 'filtro', 'Mide la tensión en los capacitores de filtro.'),
+        C('Capacitor de acoplo o potenciómetro defectuoso', 2, ['amp'], 'entrada', 'Inyecta señal desde la entrada y sigue la señal etapa por etapa.'),
+        C('Parlante, cable o jack en mal estado', 2, null, null, 'Prueba con otro parlante y revisa la continuidad del cable.'),
+        C('Etapa de entrada (preamplificador) sin polarización', 2, ['amp'], 'preamp', 'Mide las tensiones DC de las patas del IC o transistores.')
+      ]),
+    S('distorsion', 'Distorsión / suena sucio o entrecortado',
+      ['distorsion', 'distorsiona', 'suena mal', 'suena sucio', 'sucio', 'entrecortado', 'crepita', 'rasca', 'saturado', 'sonido feo', 'cruje'],
+      ['¿Crepita al mover el potenciómetro o el cable?', '¿Distorsiona a cualquier volumen o solo alto?'],
+      [
+        C('Mal ajuste de reposo (bias) o diodos de polarización defectuosos', 3, ['amp'], 'bias', 'Mide la corriente de reposo (≈ 20–50 mA) y reajusta el trimmer.'),
+        C('Capacitores de filtro secos', 2, ['amp'], 'filtro', 'Mide capacitancia/ESR y el rizado.'),
+        C('Transistores de salida desbalanceados', 2, ['amp'], 'salida', 'Comprueba que los pares tengan ganancias similares; cámbialos juntos.'),
+        C('Potenciómetro o jack sucio (crepita al moverlo)', 3, ['amp'], 'entrada', 'Limpia con limpiador de contactos o alcohol isopropílico.'),
+        C('Parlante con bobina rozando o cono dañado', 1, null, null, 'Prueba con otro parlante.')
+      ]),
+    S('alarma', 'Pitido o alarma constante (UPS)',
+      ['alarma', 'beep', 'pita', 'pitido', 'bip', 'suena la alarma', 'sobrecarga', 'overload'],
+      ['¿El pitido es continuo o intermitente? ¿Hay LED de falla?'],
+      [
+        C('Batería débil o desconectada', 3, ['ups'], 'bateria', 'Mide el voltaje de la batería y revisa los terminales.'),
+        C('Sobrecarga: la carga supera la potencia de la UPS', 3, ['ups'], null, 'Desconecta equipos y mira si se silencia.'),
+        C('Falla del inversor o de su control', 2, ['ups'], 'inversor', 'Comprueba el fusible de batería y los MOSFET.'),
+        C('Cortocircuito en la salida', 2, ['ups'], null, 'Desconecta la carga y mide la salida en vacío.'),
+        C('Falla en el microcontrolador o sensores', 1, ['ups'], 'mcu', 'Mide 5 V y el reloj del microcontrolador.')
+      ]),
+    S('sinind', 'No enciende el LED o display',
+      ['led', 'display', 'pantalla', 'indicador', 'no se ve', 'sin luz', 'no ilumina'],
+      ['¿Funciona el equipo aunque no se vea el indicador?'],
+      [
+        C('Falta alimentación de la lógica (5 V / 3.3 V)', 3, null, { ups: 'reg5', lin: 'regulador' }, 'Mide la tensión de la lógica en el microcontrolador o display.'),
+        C('LED o resistencia limitadora abiertos', 2, ['lin'], 'led', 'Mide la tensión de salida antes de culpar al LED.'),
+        C('Cinta flexible o conector del display flojo', 2, null, null, 'Reasienta el conector y limpia los contactos.'),
+        C('Microcontrolador sin reloj o dañado', 2, ['ups'], 'mcu', 'Mide la señal del cristal y la alimentación.'),
+        C('Display con retroiluminación quemada', 1, null, null, 'Ilumina con una linterna: si se ve en sombra, falta la luz.')
+      ]),
+    S('relenoact', 'El relé no activa / no conmuta',
+      ['rele no', 'no activa', 'no conmuta', 'no cierra', 'contactos', 'no hace clic', 'rele pegado', 'no cambia', 'no acciona'],
+      ['¿Se oye el clic del relé al activarse?'],
+      [
+        C('Transistor driver abierto o sin polarización', 3, ['rel'], 'transistor', 'Modo diodo base–emisor y mide la tensión de base al activar.'),
+        C('Resistencia de base abierta', 3, ['rel'], 'rbase', 'Mide en circuito apagado.'),
+        C('Bobina del relé abierta', 2, ['rel'], 'bobina', 'Mide la resistencia entre los pines de la bobina.'),
+        C('Falta tensión de alimentación de la bobina', 2, ['rel'], 'fuente', 'Mide la tensión en la bobina.'),
+        C('Diodo de rueda libre en corto', 2, ['rel'], 'diodo', 'Modo diodo; si da 0 V en ambos sentidos, cámbialo.'),
+        C('Contactos quemados o pegados', 2, ['rel', 'ups'], { rel: 'contactos', ups: 'rele' }, 'Continuidad con el relé activado y desactivado.'),
+        C('No llega la señal de control', 2, ['rel'], 'entrada', 'Mide la señal de control al provocarla.')
+      ]),
+    S('humedad', 'Humedad, óxido o derrame',
+      ['oxido', 'sulfato', 'humedad', 'mojado', 'agua', 'corrosion', 'derrame', 'salitre', 'liquido'],
+      ['¿Hay líquido o costra blanca/verde alrededor de las baterías o capacitores?'],
+      [
+        C('Pistas o patas corroídas por humedad o electrolito', 3, null, null, 'Limpia con alcohol isopropílico y cepillo suave; revisa pistas cortadas y repáralas con cable.'),
+        C('Capacitores que derramaron electrolito', 3, null, null, 'Cambia el capacitor y limpia el ácido de la placa, que sigue corroyendo.'),
+        C('Batería con sulfato derramado', 2, ['ups'], 'bateria', 'Limpia con bicarbonato (con guantes), revisa bornes y cableado.')
+      ]),
+    S('corto', 'Salta el breaker o hay cortocircuito',
+      ['salta el breaker', 'salta el termico', 'corto', 'cortocircuito', 'tumba', 'dispara', 'salta la proteccion', 'salta el automatico', 'dispara el breaker'],
+      ['¿Salta en cuanto lo conectas o al encenderlo?'],
+      [
+        C('Puente rectificador en corto', 3, ['lin', 'con', 'ups', 'amp'], 'puente', 'Modo diodo en cada diodo.'),
+        C('MOSFET o transistores de potencia en corto', 3, ['con', 'ups', 'amp'], { con: 'mosfet', ups: 'inversor', amp: 'salida' }, 'Mide con el equipo apagado entre los terminales de cada transistor.'),
+        C('Varistor en corto', 2, ['con', 'ups'], 'varistor', 'Visual y medición de resistencia.'),
+        C('Capacitor primario o de filtro en corto', 2, ['con', 'lin'], { con: 'cprim', lin: 'filtro' }, 'Mide la resistencia entre sus terminales con el equipo apagado.'),
+        C('Transformador en corto', 2, ['lin', 'ups', 'amp'], 'trafo', 'Compara el consumo en vacío; si calienta rápido, está dañado.'),
+        C('Cable de red pelado o enchufe en corto', 2, null, null, 'Revisa el cable y el enchufe con el multímetro.')
+      ])
+  ];
+
+  var RAPIDOS = ['No enciende', 'No llega corriente', 'Se quema el fusible', 'Calienta', 'Zumbido', 'Se apaga solo', 'Hace clic', 'Voltaje bajo', 'Voltaje alto', 'No carga la batería', 'No suena', 'Distorsión'];
+
+  /* =====================================================================
+     UTILIDADES COMUNES
+     ===================================================================== */
+  function adivinar(t) {
+    t = norm(t);
+    if (/\bups\b|no break|nobreak|respaldo|\bsai\b/.test(t)) return 'ups';
+    if (/amplific|audio|bocina|parlante|receptor|equipo de sonido|\bamp\b|bafle|minicomponente/.test(t)) return 'amp';
+    if (/cargador|adaptador|fuente de pc|fuente atx|laptop|televisor|\btv\b|monitor|router|decodificador|impresora|fuente conmutada|smps/.test(t)) return 'con';
+    if (/eliminador|transformador|fuente lineal|fuente de banco/.test(t)) return 'lin';
+    if (/\brele\b|modulo de rele/.test(t)) return 'rel';
+    return '';
+  }
+  function compDe(cid, ref) {
+    if (!cid || !ref) return null;
+    var id = typeof ref === 'string' ? ref : ref[cid];
+    if (!id) return null;
+    var lista = CIRC[cid].comps;
+    for (var i = 0; i < lista.length; i++) { if (lista[i].id === id) return lista[i]; }
+    return null;
+  }
+  function llenarSelect(sel, vacio) {
+    var prev = sel.value;
+    sel.textContent = '';
+    var o0 = el('option', '', vacio); o0.value = ''; sel.appendChild(o0);
+    Object.keys(CIRC).forEach(function (id) {
+      var o = el('option', '', (id.indexOf('u_') === 0 ? '★ ' : '') + CIRC[id].n); o.value = id; sel.appendChild(o);
+    });
+    if (prev && CIRC[prev]) sel.value = prev;
+  }
+  function boton(clase, texto, fn) {
+    var b = el('button', clase, texto); b.type = 'button';
+    b.addEventListener('click', fn);
+    return b;
+  }
+
+  /* =====================================================================
+     DIAGNÓSTICO POR SÍNTOMAS
+     ===================================================================== */
+  var selDiag = $('selCircDiag');
+  llenarSelect(selDiag, 'No sé / general (muestra todo)');
+  var sint = $('sintoma');
+
+  RAPIDOS.forEach(function (t) {
+    var ch = boton('chip', t, function () {
+      var v = sint.value.trim();
+      var frag = t.toLowerCase();
+      if (norm(v).indexOf(norm(frag)) === -1) sint.value = v ? v + ', ' + frag : frag;
+    });
+    $('chipsSint').appendChild(ch);
+  });
+
+  var equipoActual = null;
+  function mostrarEquipo() {
+    var box = $('equipoDiag');
+    box.textContent = '';
+    if (!equipoActual) { box.hidden = true; return; }
+    box.hidden = false;
+    var info = [equipoActual.nombre, equipoActual.marca, equipoActual.modelo].filter(Boolean).join(' · ');
+    box.appendChild(el('span', '', '📦 Equipo: ' + info));
+    box.appendChild(boton('mini', 'Quitar', function () { equipoActual = null; mostrarEquipo(); }));
+  }
+
+  window.abrirDiagnostico = function (eq) {
+    equipoActual = eq || null;
+    mostrarEquipo();
+    var g = adivinar([eq.nombre, eq.marca, eq.modelo].join(' '));
+    selDiag.value = g;
+    $('resDiag').textContent = '';
+    irA('diag');
+    sint.focus();
+  };
+
+  function nivel(puntaje, max) {
+    var r = max ? puntaje / max : 0;
+    if (r >= 0.66) return ['Muy probable', 'alta'];
+    if (r >= 0.33) return ['Probable', 'media'];
+    return ['Posible', 'baja'];
+  }
+
+  function diagnosticar() {
+    var texto = sint.value;
+    var tn = ' ' + norm(texto) + ' ';
+    var res = $('resDiag');
+    res.textContent = '';
+    if (norm(texto).length < 3) { aviso('Escribe qué le pasa al equipo'); return; }
+
+    var circ = selDiag.value;
+    var asumido = '';
+    if (!circ) {
+      var g = adivinar((equipoActual ? [equipoActual.nombre, equipoActual.marca, equipoActual.modelo].join(' ') : '') + ' ' + texto);
+      if (g) { circ = g; selDiag.value = g; asumido = g; }
+    }
+
+    var detectados = [];
+    var mapa = {};
+    SINTOMAS.forEach(function (s) {
+      var n = 0;
+      s.k.forEach(function (k) {
+        var hay = k.length < 5 ? tn.indexOf(' ' + k + ' ') !== -1 : tn.indexOf(k) !== -1;
+        if (hay) n++;
+      });
+      if (!n) return;
+      detectados.push(s);
+      s.c.forEach(function (c) {
+        if (circ && c.c && c.c.indexOf(circ) === -1) return;
+        var peso = c.p * (1 + 0.5 * (n - 1));
+        if (circ && c.c) peso *= 1.5;
+        var key = c.t;
+        if (!mapa[key]) mapa[key] = { c: c, puntaje: 0, sint: [] };
+        mapa[key].puntaje += peso;
+        if (mapa[key].sint.indexOf(s.t) === -1) mapa[key].sint.push(s.t);
+      });
+    });
+
+    if (!detectados.length) {
+      var box = el('div', 'panel');
+      box.appendChild(el('h2', '', 'No reconocí ese síntoma'));
+      box.appendChild(el('p', 'ayuda', 'Prueba con otras palabras (por ejemplo: "no enciende", "se apaga solo", "calienta", "zumbido", "sin voltaje") o toca uno de los síntomas rápidos de arriba. Si es una falla muy particular, usa la pestaña Circuitos para revisar componente por componente.'));
+      res.appendChild(box);
+      return;
+    }
+
+    var lista = Object.keys(mapa).map(function (k) { return mapa[k]; })
+      .sort(function (a, b) { return b.puntaje - a.puntaje; });
+    if (!lista.length) {
+      var vacio = el('div', 'panel');
+      vacio.appendChild(el('h2', '', 'Ese síntoma no encaja con ' + (circ ? CIRC[circ].n : 'el circuito elegido')));
+      vacio.appendChild(el('p', 'ayuda', 'Detecté: ' + detectados.map(function (s) { return s.t; }).join(', ') + '. Pero no tengo causas para ese tipo de circuito. Cambia el tipo de circuito a "No sé / general" para ver todas las posibilidades, o describe otro síntoma.'));
+      res.appendChild(vacio);
+      return;
+    }
+    var max = lista[0].puntaje;
+    var lineas = ['Diagnóstico: ' + texto.trim()];
+    if (equipoActual) lineas.push('Equipo: ' + [equipoActual.nombre, equipoActual.marca, equipoActual.modelo].filter(Boolean).join(' · '));
+    if (circ) lineas.push('Circuito: ' + CIRC[circ].n);
+
+    var panel = el('section', 'panel');
+    panel.appendChild(el('h2', '', 'Posibles causas'));
+    if (asumido) panel.appendChild(el('p', 'ayuda', 'Asumí que es: ' + CIRC[asumido].n + '. Si no lo es, cámbialo arriba y vuelve a diagnosticar.'));
+    var chips = el('div', 'chips fijos');
+    detectados.forEach(function (s) { chips.appendChild(el('span', 'pill', s.t)); });
+    panel.appendChild(chips);
+
+    var preguntas = [];
+    detectados.forEach(function (s) { s.q.forEach(function (q) { if (preguntas.indexOf(q) === -1) preguntas.push(q); }); });
+    if (preguntas.length) {
+      var q = el('div', 'preguntas');
+      q.appendChild(el('strong', '', 'Para afinar, responde:'));
+      var ul = el('ul'); preguntas.slice(0, 5).forEach(function (t) { ul.appendChild(el('li', '', t)); });
+      q.appendChild(ul);
+      panel.appendChild(q);
+    }
+
+    var LIM = 8;
+    lista.forEach(function (it, i) {
+      var c = it.c;
+      var nv = nivel(it.puntaje, max);
+      var d = el('details', 'causa ' + nv[1] + (i >= LIM ? ' extra' : ''));
+      if (i === 0) d.open = true;
+      if (i >= LIM) d.hidden = true;
+      var sm = el('summary');
+      sm.appendChild(el('span', 'nv ' + nv[1], nv[0]));
+      sm.appendChild(el('span', 'ct', c.t));
+      d.appendChild(sm);
+      var cuerpo = el('div', 'cuerpo');
+      cuerpo.appendChild(el('p', '', 'Cómo comprobarlo: ' + c.q));
+      if (!circ && c.c) cuerpo.appendChild(el('p', 'sub', 'Aplica a: ' + c.c.map(function (x) { return CORTO[x]; }).join(', ')));
+      var comp = compDe(circ, c.k);
+      if (comp) {
+        cuerpo.appendChild(el('p', 'sub', 'Componente: ' + comp.n + ' — ' + comp.p));
+        (function (circId) {
+          cuerpo.appendChild(boton('mini', 'Abrir circuito', function () { abrirCircuito(circId); }));
+        })(circ);
+      }
+      d.appendChild(cuerpo);
+      panel.appendChild(d);
+      if (i < LIM) lineas.push((i + 1) + '. [' + nv[0] + '] ' + c.t + ' — ' + c.q);
+    });
+
+    if (lista.length > LIM) {
+      var mas = boton('btn btn-sec', 'Mostrar las ' + (lista.length - LIM) + ' causas restantes', function () {
+        panel.querySelectorAll('.extra').forEach(function (x) { x.hidden = false; });
+        mas.remove();
+      });
+      panel.appendChild(mas);
+    }
+    panel.appendChild(boton('btn btn-sec', '📋 Copiar diagnóstico', function () { copiar(lineas.join('\n')); }));
+    res.appendChild(panel);
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $('btnDiag').addEventListener('click', diagnosticar);
+
+  /* =====================================================================
+     ANALIZADOR DE CIRCUITOS
+     ===================================================================== */
+  var selCirc = $('selCirc');
+  llenarSelect(selCirc, '— Elige un circuito —');
+  var CLAVE = 'inventario_circ_v1';
+  var estado = {};
+  try { estado = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { estado = {}; }
+  if (typeof estado !== 'object' || Array.isArray(estado)) estado = {};
+  function guardarEstado() { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) {} }
+
+  var ESTADOS = [['', 'Sin revisar'], ['ok', 'Presente y bien'], ['falta', 'Falta'], ['danado', 'Quemado / dañado'], ['ilegible', 'Ilegible / borrado']];
+
+  function renderLista() {
+    var cont = $('listaComp');
+    cont.textContent = '';
+    $('resCirc').textContent = '';
+    var cid = selCirc.value;
+    actualizarAcciones();
+    if (!cid) {
+      cont.appendChild(el('p', 'ayuda', 'Elige un circuito arriba para ver sus componentes.'));
+      $('accionesCirc').hidden = true;
+      return;
+    }
+    $('accionesCirc').hidden = false;
+    var Cc = CIRC[cid];
+    if (!estado[cid]) estado[cid] = {};
+    cont.appendChild(el('p', 'ayuda', Cc.desc));
+    Cc.comps.forEach(function (k, i) {
+      var st = estado[cid][k.id] || { s: '', n: '' };
+      var fila = el('div', 'comp s-' + (st.s || 'pend'));
+      var cab = el('div', 'comp-cab');
+      cab.appendChild(el('span', 'num', String(i + 1)));
+      var tit = el('div', 'comp-tit');
+      tit.appendChild(el('strong', '', k.n + (k.c ? '' : ' (secundario)')));
+      tit.appendChild(el('div', 'comp-rol', k.r));
+      cab.appendChild(tit);
+      fila.appendChild(cab);
+
+      var sel = el('select', 'est');
+      sel.setAttribute('aria-label', 'Estado de ' + k.n);
+      ESTADOS.forEach(function (e) {
+        var o = el('option', '', e[1]); o.value = e[0]; if (e[0] === st.s) o.selected = true; sel.appendChild(o);
+      });
+      fila.appendChild(sel);
+
+      var nota = el('input', 'nota');
+      nota.type = 'text';
+      nota.placeholder = 'Lo que alcanzas a ver: marcas, color, tamaño, código parcial…';
+      nota.value = st.n || '';
+      nota.hidden = (st.s !== 'ilegible');
+      fila.appendChild(nota);
+
+      var info = el('details', 'info');
+      info.appendChild(el('summary', '', '¿Cómo es y cómo se prueba?'));
+      info.appendChild(el('p', '', 'Valores típicos: ' + k.v));
+      info.appendChild(el('p', '', 'Falla típica: ' + k.f));
+      info.appendChild(el('p', '', 'Prueba: ' + k.p));
+      fila.appendChild(info);
+
+      sel.addEventListener('change', function () {
+        estado[cid][k.id] = { s: sel.value, n: nota.value };
+        fila.className = 'comp s-' + (sel.value || 'pend');
+        nota.hidden = (sel.value !== 'ilegible');
+        $('resCirc').textContent = '';
+        guardarEstado();
+      });
+      nota.addEventListener('input', function () {
+        estado[cid][k.id] = { s: sel.value, n: nota.value };
+        guardarEstado();
+      });
+      cont.appendChild(fila);
+    });
+  }
+  selCirc.addEventListener('change', renderLista);
+
+  function abrirCircuito(cid) {
+    selCirc.value = cid;
+    renderLista();
+    irA('circ');
+  }
+
+  $('btnLimpiar').addEventListener('click', function () {
+    var cid = selCirc.value;
+    if (!cid || !confirm('¿Borrar todas las marcas de este circuito?')) return;
+    estado[cid] = {};
+    guardarEstado();
+    renderLista();
+    aviso('Marcas borradas');
+  });
+
+  /* --- Deducir circuito por lo que se ve --- */
+  var marcadas = {};
+  PISTAS.forEach(function (p) {
+    var ch = boton('chip', p.t, function () {
+      marcadas[p.id] = !marcadas[p.id];
+      ch.classList.toggle('on', !!marcadas[p.id]);
+      ch.setAttribute('aria-pressed', marcadas[p.id] ? 'true' : 'false');
+    });
+    ch.setAttribute('aria-pressed', 'false');
+    $('chipsPistas').appendChild(ch);
+  });
+  $('btnPistas').addEventListener('click', function () {
+    var p = $('panelPistas');
+    p.hidden = !p.hidden;
+  });
+
+  function deducir() {
+    var res = $('resDeduc');
+    res.textContent = '';
+    var usadas = PISTAS.filter(function (p) { return marcadas[p.id]; });
+    if (!usadas.length) { aviso('Marca al menos un componente que veas'); return; }
+
+    var punt = {}, maxTot = 0;
+    Object.keys(CIRC).forEach(function (c) { punt[c] = 0; });
+    usadas.forEach(function (p) {
+      var m = 0;
+      Object.keys(p.w).forEach(function (c) { punt[c] += p.w[c]; if (p.w[c] > m) m = p.w[c]; });
+      maxTot += m;
+    });
+    var orden = Object.keys(punt).filter(function (c) { return punt[c] > 0; })
+      .sort(function (a, b) { return punt[b] - punt[a]; });
+    if (!orden.length) { res.appendChild(el('p', 'ayuda', 'No pude deducirlo con esas pistas.')); return; }
+
+    var top = orden[0];
+    var pct = Math.round(100 * punt[top] / maxTot);
+    var box = el('div', 'deduc');
+    if (maxTot < 3 || pct < 40) {
+      box.appendChild(el('p', 'ayuda', 'Hay pocas pistas para estar seguro. Marca más componentes que veas en la placa.'));
+    }
+    orden.slice(0, 3).forEach(function (c, i) {
+      var f = el('div', 'barra');
+      var pc = Math.round(100 * punt[c] / maxTot);
+      var t = el('div', 'barra-t');
+      t.appendChild(el('span', '', (i === 0 ? '⭐ ' : '') + CIRC[c].n));
+      t.appendChild(el('strong', '', pc + '%'));
+      f.appendChild(t);
+      var b = el('div', 'barra-b'); var r = el('span'); r.style.width = Math.min(100, pc) + '%'; b.appendChild(r);
+      f.appendChild(b);
+      box.appendChild(f);
+    });
+
+    var vistos = {};
+    usadas.forEach(function (p) { if (p.m[top]) vistos[p.m[top]] = true; });
+    var noVistos = CIRC[top].comps.filter(function (k) { return k.c && !vistos[k.id]; });
+    box.appendChild(el('p', 'ayuda', 'Es lo más parecido a: ' + CIRC[top].n + '.'));
+    if (noVistos.length) {
+      var q = el('div', 'preguntas');
+      q.appendChild(el('strong', '', 'En ese circuito deberían estar, pero no marcaste (pueden faltar o estar dañados):'));
+      var ul = el('ul');
+      noVistos.forEach(function (k) { ul.appendChild(el('li', '', k.n + ' — ' + k.d)); });
+      q.appendChild(ul);
+      box.appendChild(q);
+    }
+    box.appendChild(boton('btn btn-primary', 'Analizar este circuito', function () {
+      if (!estado[top]) estado[top] = {};
+      usadas.forEach(function (p) {
+        var id = p.m[top];
+        if (id && (!estado[top][id] || !estado[top][id].s)) estado[top][id] = { s: 'ok', n: '' };
+      });
+      guardarEstado();
+      selCirc.value = top;
+      renderLista();
+      $('panelLista').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      aviso('Marqué como presentes los que viste; revisa el resto');
+    }));
+    res.appendChild(box);
+  }
+  $('btnDeducir').addEventListener('click', deducir);
+
+  /* --- Análisis del circuito --- */
+  function analizar() {
+    var cid = selCirc.value;
+    var res = $('resCirc');
+    res.textContent = '';
+    if (!cid) { aviso('Elige un circuito'); return; }
+    var Cc = CIRC[cid];
+    var est = estado[cid] || {};
+    var g = { ok: [], falta: [], danado: [], ilegible: [], pend: [] };
+    Cc.comps.forEach(function (k) {
+      var s = (est[k.id] && est[k.id].s) || 'pend';
+      g[s].push(k);
+    });
+    var total = Cc.comps.length;
+    var criticos = g.falta.concat(g.danado).filter(function (k) { return k.c; });
+    criticos.sort(function (a, b) { return Cc.comps.indexOf(a) - Cc.comps.indexOf(b); });
+    var lineas = ['Análisis: ' + Cc.n, 'Confirmados: ' + g.ok.length + ' de ' + total];
+
+    var panel = el('section', 'panel');
+    panel.appendChild(el('h2', '', 'Resultado del análisis'));
+
+    var flujo = el('div', 'flujo');
+    Cc.comps.forEach(function (k, i) {
+      var s = (est[k.id] && est[k.id].s) || 'pend';
+      var p = el('span', 'paso s-' + s, k.n.split(/ [\/(]/)[0]);
+      p.title = k.n;
+      flujo.appendChild(p);
+      if (i < Cc.comps.length - 1) flujo.appendChild(el('span', 'flecha', '→'));
+    });
+    panel.appendChild(flujo);
+
+    var veredicto;
+    if (criticos.length) {
+      veredicto = el('div', 'veredicto mal');
+      veredicto.appendChild(el('strong', '', 'Así el circuito no puede funcionar.'));
+      var ul0 = el('ul');
+      criticos.forEach(function (k) { ul0.appendChild(el('li', '', k.n + ': ' + k.e)); });
+      veredicto.appendChild(ul0);
+      veredicto.appendChild(el('p', '', 'Empieza por: ' + criticos[0].n + ' (es el primero en la ruta de la energía/señal).'));
+      lineas.push('Veredicto: no puede funcionar. Empezar por ' + criticos[0].n);
+    } else if (g.falta.length || g.danado.length) {
+      veredicto = el('div', 'veredicto med');
+      veredicto.appendChild(el('strong', '', 'Faltan o fallan piezas secundarias.'));
+      veredicto.appendChild(el('p', '', 'Puede funcionar, pero con fallas o sin protección.'));
+      lineas.push('Veredicto: faltan o fallan piezas secundarias.');
+    } else if (g.pend.length || g.ilegible.length) {
+      veredicto = el('div', 'veredicto med');
+      veredicto.appendChild(el('strong', '', 'Aún no hay un diagnóstico firme.'));
+      veredicto.appendChild(el('p', '', 'Faltan por revisar: ' + g.pend.concat(g.ilegible).map(function (k) { return k.n; }).join(', ') + '.'));
+      lineas.push('Veredicto: pendiente de revisar ' + (g.pend.length + g.ilegible.length) + ' componentes.');
+    } else {
+      veredicto = el('div', 'veredicto bien');
+      veredicto.appendChild(el('strong', '', 'Todos los componentes están marcados como bien.'));
+      veredicto.appendChild(el('p', '', 'Si sigue fallando: soldaduras frías, pistas cortadas, conectores, tierra y carga externa. Mide con el equipo energizado, siguiendo la ruta.'));
+      lineas.push('Veredicto: todo marcado como bien.');
+    }
+    panel.appendChild(veredicto);
+
+    function bloque(titulo, lista, clase, cuerpoFn) {
+      if (!lista.length) return;
+      var b = el('div', 'bloque ' + clase);
+      b.appendChild(el('h3', '', titulo + ' (' + lista.length + ')'));
+      lista.forEach(function (k) {
+        var it = el('div', 'item');
+        it.appendChild(el('strong', '', k.n));
+        cuerpoFn(it, k);
+        b.appendChild(it);
+      });
+      panel.appendChild(b);
+    }
+
+    bloque('Faltan', g.falta, 'falta', function (it, k) {
+      it.appendChild(el('p', '', 'Función: ' + k.r));
+      it.appendChild(el('p', '', 'Valor típico: ' + k.v));
+      it.appendChild(el('p', '', 'Sin él: ' + k.e));
+      it.appendChild(el('p', 'sub', 'Dónde va: ' + k.d));
+      lineas.push('FALTA ' + k.n + ' — ' + k.v + ' — ' + k.d);
+    });
+
+    bloque('Quemados o dañados', g.danado, 'danado', function (it, k) {
+      it.appendChild(el('p', '', 'Falla típica: ' + k.f));
+      it.appendChild(el('p', '', 'Para confirmar: ' + k.p));
+      var rel = k.a.map(function (id) { return Cc.comps.filter(function (x) { return x.id === id; })[0]; })
+        .filter(function (x) { return x && ((est[x.id] && est[x.id].s) !== 'ok'); });
+      if (rel.length) it.appendChild(el('p', 'sub', 'Revisa también (suelen fallar juntos): ' + rel.map(function (x) { return x.n; }).join(', ') + '.'));
+      lineas.push('DAÑADO ' + k.n + ' — ' + k.p + (rel.length ? ' — revisar también: ' + rel.map(function (x) { return x.n; }).join(', ') : ''));
+    });
+
+    bloque('Ilegibles: cómo deducirlos', g.ilegible, 'ilegible', function (it, k) {
+      var pista = est[k.id] && est[k.id].n;
+      if (pista) it.appendChild(el('p', '', 'Lo que viste: ' + pista));
+      it.appendChild(el('p', '', 'Valor probable: ' + k.v));
+      it.appendChild(el('p', '', 'Cómo deducirlo: ' + k.d));
+      var vec = k.a.concat(Cc.comps.filter(function (x) { return x.a.indexOf(k.id) !== -1; }).map(function (x) { return x.id; }));
+      var nombres = [];
+      vec.forEach(function (id) {
+        var x = Cc.comps.filter(function (y) { return y.id === id; })[0];
+        if (x && nombres.indexOf(x.n) === -1) nombres.push(x.n);
+      });
+      if (nombres.length) it.appendChild(el('p', 'sub', 'Compara con sus vecinos en el circuito: ' + nombres.join(', ') + '.'));
+      lineas.push('ILEGIBLE ' + k.n + (pista ? ' (viste: ' + pista + ')' : '') + ' — probable: ' + k.v + ' — ' + k.d);
+    });
+
+    bloque('Sin revisar', g.pend, 'pend', function (it, k) {
+      it.appendChild(el('p', 'sub', 'Prueba: ' + k.p));
+    });
+
+    var pie = el('p', 'sub', 'Esta herramienta aplica reglas generales de cada tipo de circuito. Confirma siempre midiendo.');
+    panel.appendChild(pie);
+    panel.appendChild(boton('btn btn-sec', '📋 Copiar análisis', function () { copiar(lineas.join('\n')); }));
+    res.appendChild(panel);
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $('btnAnalizar').addEventListener('click', analizar);
+
+  /* =====================================================================
+     CIRCUITOS PROPIOS: crear, duplicar, editar y eliminar
+     ===================================================================== */
+  function esPropio(id) { return !!(id && propios[id]); }
+  function guardarPropios() {
+    try { localStorage.setItem(CLAVE_U, JSON.stringify(propios)); return true; }
+    catch (e) { aviso('No se pudo guardar el circuito (almacenamiento lleno)'); return false; }
+  }
+  function refrescarSelects() {
+    llenarSelect(selDiag, 'No sé / general (muestra todo)');
+    llenarSelect(selCirc, '— Elige un circuito —');
+  }
+  function actualizarAcciones() {
+    var cid = selCirc.value;
+    $('btnDuplicar').hidden = !cid;
+    $('btnEditar').hidden = !esPropio(cid);
+    $('btnBorrar').hidden = !esPropio(cid);
+  }
+
+  var ed = null, edN = 0;
+  function compVacio() { return { id: '', n: '', r: '', v: '', f: '', p: '', e: '', d: '', c: true }; }
+  function copiaDe(cid, mismoId) {
+    var C0 = CIRC[cid];
+    return {
+      id: mismoId ? cid : null,
+      n: mismoId ? C0.n : C0.n + ' (copia)',
+      desc: C0.desc,
+      comps: C0.comps.map(function (k) { return { id: k.id, n: k.n, r: k.r, v: k.v, f: k.f, p: k.p, e: k.e, d: k.d, c: k.c }; })
+    };
+  }
+  function campoEd(etq, valor, ph, fn) {
+    var id = 'edf' + (++edN);
+    var f = el('div', 'field');
+    var l = el('label', '', etq); l.htmlFor = id; f.appendChild(l);
+    var i = el('input'); i.type = 'text'; i.id = id; i.maxLength = 300;
+    i.value = valor || ''; i.placeholder = ph || '';
+    i.addEventListener('input', function () { fn(i.value); });
+    f.appendChild(i);
+    return f;
+  }
+  function pintarEditor() {
+    var box = $('editorComps');
+    box.textContent = '';
+    ed.comps.forEach(function (c, i) {
+      var fila = el('div', 'ed-comp');
+      var cab = el('div', 'ed-cab');
+      cab.appendChild(el('span', 'num', String(i + 1)));
+      cab.appendChild(el('span', 'sp'));
+      var sube = boton('mini', '↑', function () {
+        if (i > 0) { var t = ed.comps[i - 1]; ed.comps[i - 1] = c; ed.comps[i] = t; pintarEditor(); }
+      });
+      sube.setAttribute('aria-label', 'Subir componente');
+      var baja = boton('mini', '↓', function () {
+        if (i < ed.comps.length - 1) { var t = ed.comps[i + 1]; ed.comps[i + 1] = c; ed.comps[i] = t; pintarEditor(); }
+      });
+      baja.setAttribute('aria-label', 'Bajar componente');
+      var quita = boton('mini', '✕', function () { ed.comps.splice(i, 1); pintarEditor(); });
+      quita.setAttribute('aria-label', 'Quitar componente');
+      cab.appendChild(sube); cab.appendChild(baja); cab.appendChild(quita);
+      fila.appendChild(cab);
+
+      fila.appendChild(campoEd('Nombre del componente *', c.n, 'Ej. Fusible de entrada', function (v) { c.n = v; }));
+      fila.appendChild(campoEd('Qué hace', c.r, 'Ej. Protege el transformador', function (v) { c.r = v; }));
+      fila.appendChild(campoEd('Valor típico', c.v, 'Ej. 1 A, 250 V', function (v) { c.v = v; }));
+      fila.appendChild(campoEd('Cómo probarlo', c.p, 'Ej. Continuidad: debe sonar', function (v) { c.p = v; }));
+      var chk = el('label', 'chk');
+      var cb = el('input'); cb.type = 'checkbox'; cb.checked = !!c.c;
+      cb.addEventListener('change', function () { c.c = cb.checked; });
+      chk.appendChild(cb);
+      chk.appendChild(document.createTextNode('Es crítico: si falta o falla, el circuito no funciona'));
+      fila.appendChild(chk);
+
+      var mas = el('details', 'info');
+      mas.appendChild(el('summary', '', 'Más datos (opcional)'));
+      mas.appendChild(campoEd('Falla típica', c.f, 'Ej. Abierto: sin energía', function (v) { c.f = v; }));
+      mas.appendChild(campoEd('Efecto si falta o falla', c.e, 'Ej. El equipo no recibe corriente', function (v) { c.e = v; }));
+      mas.appendChild(campoEd('Pistas si está ilegible', c.d, 'Ej. Va junto al puente, valor impreso en el portafusible', function (v) { c.d = v; }));
+      fila.appendChild(mas);
+      box.appendChild(fila);
+    });
+    if (!ed.comps.length) box.appendChild(el('p', 'ayuda', 'Aún no hay componentes. Toca “Agregar componente”.'));
+  }
+  function abrirEditor(datos, titulo) {
+    ed = datos;
+    $('edTitulo').textContent = titulo;
+    $('edNombre').value = ed.n;
+    $('edDesc').value = ed.desc;
+    pintarEditor();
+    $('resCirc').textContent = '';
+    $('panelEditor').hidden = false;
+    $('panelLista').hidden = true;
+    $('panelEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function cerrarEditor() {
+    ed = null;
+    $('panelEditor').hidden = true;
+    $('panelLista').hidden = false;
+  }
+
+  $('edNombre').addEventListener('input', function () { if (ed) ed.n = $('edNombre').value; });
+  $('edDesc').addEventListener('input', function () { if (ed) ed.desc = $('edDesc').value; });
+  $('btnNuevoCirc').addEventListener('click', function () {
+    abrirEditor({ id: null, n: '', desc: '', comps: [compVacio()] }, '➕ Nuevo circuito');
+  });
+  $('btnDuplicar').addEventListener('click', function () {
+    var cid = selCirc.value;
+    if (cid) abrirEditor(copiaDe(cid, false), '📑 Copia editable de: ' + CIRC[cid].n);
+  });
+  $('btnEditar').addEventListener('click', function () {
+    var cid = selCirc.value;
+    if (esPropio(cid)) abrirEditor(copiaDe(cid, true), '✏️ Editar circuito');
+  });
+  $('btnBorrar').addEventListener('click', function () {
+    var cid = selCirc.value;
+    if (!esPropio(cid) || !confirm('¿Eliminar el circuito “' + CIRC[cid].n + '” y sus marcas?')) return;
+    delete propios[cid]; delete CIRC[cid]; delete CORTO[cid]; delete estado[cid];
+    guardarPropios(); guardarEstado();
+    refrescarSelects();
+    selCirc.value = '';
+    renderLista();
+    aviso('Circuito eliminado');
+  });
+  $('btnAddComp').addEventListener('click', function () {
+    if (!ed) return;
+    ed.comps.push(compVacio());
+    pintarEditor();
+    var filas = $('editorComps').querySelectorAll('.ed-comp');
+    var ult = filas[filas.length - 1];
+    if (ult) { ult.scrollIntoView({ behavior: 'smooth', block: 'start' }); var inp = ult.querySelector('input[type=text]'); if (inp) inp.focus(); }
+  });
+  $('btnCancelarCirc').addEventListener('click', cerrarEditor);
+  $('btnGuardarCirc').addEventListener('click', function () {
+    if (!ed) return;
+    var nombre = ed.n.trim();
+    if (!nombre) { aviso('Ponle un nombre al circuito'); return; }
+    var comps = ed.comps.filter(function (c) { return c.n.trim(); });
+    if (!comps.length) { aviso('Agrega al menos un componente con nombre'); return; }
+    var id = ed.id || ('u_' + Date.now().toString(36));
+    var usados = {};
+    var lista = comps.map(function (c, i) {
+      var cid = c.id || ('c' + i + Math.random().toString(36).slice(2, 6));
+      while (usados[cid]) cid += 'x';
+      usados[cid] = true;
+      return K(cid, c.n.trim(), c.r.trim() || 'Sin descripción.', c.v.trim() || 'Según tu esquema',
+        c.f.trim() || 'Sin dato registrado.', c.p.trim() || 'Mide continuidad y valor con el multímetro.',
+        c.e.trim() || (c.c ? 'Si falta o falla, el circuito no funciona.' : 'Afecta al funcionamiento o a la protección.'),
+        c.d.trim() || 'Búscalo en tu esquema o en la placa.', [], c.c);
+    });
+    var obj = { n: nombre.slice(0, 80), desc: ed.desc.trim() || 'Circuito propio.', comps: lista };
+    var anterior = propios[id];
+    propios[id] = obj;
+    if (!guardarPropios()) { if (anterior) propios[id] = anterior; else delete propios[id]; return; }
+    CIRC[id] = obj; CORTO[id] = obj.n;
+    cerrarEditor();
+    refrescarSelects();
+    selCirc.value = id;
+    renderLista();
+    aviso('Circuito guardado ✔');
+  });
+
+  renderLista();
+})();
+
+</script>
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, clase, texto) {
+    var n = document.createElement(tag);
+    if (clase) n.className = clase;
+    if (texto !== undefined) n.textContent = texto;
+    return n;
+  }
+  function norm(t) {
+    return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  var toastEl = $('toast'), toastT;
+  function aviso(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+
+  /* =====================================================================
+     ILUSTRACIONES (SVG dibujados, funcionan sin internet)
+     ===================================================================== */
+  var LD = '#b9c2cf', BG = '#1d2430';
+  function ln(x1, y1, x2, y2, w, c) {
+    return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + (c || LD) + '" stroke-width="' + (w || 2.2) + '" stroke-linecap="round"/>';
+  }
+  function tx(x, y, t, s, c) {
+    return '<text x="' + x + '" y="' + y + '" font-size="' + (s || 7) + '" fill="' + (c || '#e6edf3') + '" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700">' + t + '</text>';
+  }
+  function rc(x, y, w, h, f, r, s) {
+    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) + '" fill="' + f + '"' + (s ? ' stroke="' + s + '"' : '') + '/>';
+  }
+  function ci(x, y, r, f, s) {
+    return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (s ? ' stroke="' + s + '"' : '') + '/>';
+  }
+  function pa(d, f, s, w) {
+    return '<path d="' + d + '" fill="' + (f || 'none') + '"' + (s ? ' stroke="' + s + '" stroke-width="' + (w || 1.5) + '"' : '') + '/>';
+  }
+  function patas(xs, y1, y2) {
+    var s = '';
+    xs.forEach(function (x) { s += ln(x, y1, x, y2); });
+    return s;
+  }
+
+  var D = {
+    axial: function (bands, body) {
+      var s = ln(6, 35, 114, 35) + rc(30, 23, 60, 24, body || '#d9b779', 11);
+      (bands || []).forEach(function (c, i) { s += rc(i < 3 ? 40 + i * 9 : 74, 23, 5, 24, c); });
+      return s;
+    },
+    diodeAx: function (label) {
+      return ln(6, 35, 114, 35) + rc(32, 26, 56, 20, '#1b1b1b', 4) + rc(74, 26, 8, 20, '#cfd6df') + tx(53, 39, label, 6.5, '#9aa4b2');
+    },
+    powres: function (label) {
+      return ln(6, 35, 24, 35) + ln(96, 35, 114, 35) + rc(24, 20, 72, 30, '#e9dfc8', 5, '#bfb08a') + tx(60, 38, label, 8, '#5a4a2a');
+    },
+    smd: function (code) {
+      return rc(38, 24, 44, 22, '#1a1a1a', 2) + rc(34, 24, 8, 22, '#cbd2da') + rc(78, 24, 8, 22, '#cbd2da') + tx(60, 40, code, 11);
+    },
+    mlcc: function () {
+      return rc(38, 24, 44, 22, '#b08957', 3) + rc(34, 24, 8, 22, '#cbd2da') + rc(78, 24, 8, 22, '#cbd2da') + tx(60, 60, 'sin marcas', 7, '#9aa4b2');
+    },
+    pot: function (label) {
+      return rc(28, 22, 64, 30, '#2d3748', 4) + rc(52, 8, 16, 14, '#c0c8d4', 2) + ln(60, 8, 60, 20, 2, '#6b7280') +
+        patas([40, 60, 80], 52, 66) + tx(60, 42, label, 9);
+    },
+    trimmer: function () {
+      return rc(34, 12, 52, 44, '#2b6cc4', 3) + ci(60, 33, 14, '#d8b14a', '#8a6d1d') + ln(50, 33, 70, 33, 3, '#6b5410') +
+        patas([44, 60, 76], 56, 66);
+    },
+    disc: function (fill, label, r) {
+      var rr = r || 20;
+      return ci(60, 28, rr, fill) + tx(60, 31, label, 8, '#f1f5f9') + ln(52, 46, 52, 66) + ln(68, 46, 68, 66);
+    },
+    ldr: function () {
+      return ci(60, 28, 20, '#c9a46a', '#7a5b2c') + pa('M44 18H72L48 24H72L48 30H72L48 36H76', 'none', '#5b3d12', 2) +
+        ln(52, 46, 52, 66) + ln(68, 46, 68, 66);
+    },
+    elec: function (sleeve, l1, l2) {
+      return rc(40, 8, 40, 46, sleeve, 5) + rc(41, 9, 10, 44, '#d7dde6', 3) + tx(46, 22, '−', 10, BG) + tx(46, 34, '−', 10, BG) + tx(46, 46, '−', 10, BG) +
+        tx(67, 31, l1, 7) + tx(67, 42, l2, 7) + ln(50, 54, 50, 66) + ln(70, 54, 70, 66);
+    },
+    film: function (color, label, w) {
+      var ww = w || 64, x = 60 - ww / 2;
+      return rc(x, 10, ww, 42, color, 5) + tx(60, 34, label, 7.5, '#fff') + ln(x + 14, 52, x + 14, 66) + ln(x + ww - 14, 52, x + ww - 14, 66);
+    },
+    tant: function () {
+      return rc(38, 14, 44, 38, '#e9b824', 12) + rc(38, 14, 12, 38, '#8a6500', 6) + tx(47, 38, '+', 10, '#fff') + tx(68, 38, '10µ 16V', 7, '#3a2a00') +
+        ln(48, 52, 48, 66) + ln(72, 52, 72, 66);
+    },
+    toroid: function (color) {
+      return '<circle cx="60" cy="31" r="19" fill="none" stroke="' + color + '" stroke-width="13"/>' +
+        '<circle cx="60" cy="31" r="19" fill="none" stroke="#c9792e" stroke-width="13" stroke-dasharray="4 3" opacity=".9"/>' +
+        ln(44, 46, 36, 66) + ln(76, 46, 84, 66);
+    },
+    trafo: function () {
+      var s = rc(20, 6, 80, 50, '#3b4252', 3), y;
+      for (y = 10; y < 54; y += 4) s += '<line x1="20" y1="' + y + '" x2="100" y2="' + y + '" stroke="#2d3340" stroke-width=".8"/>';
+      return s + rc(40, 14, 40, 34, '#b87333', 3) + tx(60, 35, '110/220V', 7, '#2b1a0a') + patas([34, 50, 70, 86], 56, 66);
+    },
+    trafoHF: function () {
+      return rc(26, 8, 68, 12, '#2a2a2a', 3) + rc(32, 20, 56, 30, '#d9a21b', 3) + rc(26, 48, 68, 8, '#2a2a2a', 3) + patas([36, 48, 60, 72, 84], 56, 66);
+    },
+    led: function (color) {
+      return pa('M44 46V28a16 16 0 0 1 32 0V46z', color, null) + rc(40, 46, 40, 4, color, 1) + '<ellipse cx="54" cy="24" rx="4" ry="7" fill="#fff" opacity=".35"/>' +
+        ln(52, 50, 52, 66) + ln(68, 50, 68, 66);
+    },
+    bridge: function (label) {
+      return rc(34, 10, 52, 36, '#1b1b1b', 5) + tx(60, 25, '~  ~  +  −', 8) + tx(60, 38, label, 7, '#9aa4b2') + patas([42, 54, 66, 78], 46, 66);
+    },
+    to92: function (label) {
+      return pa('M44 46V28a16 16 0 0 1 32 0V46z', '#1b1b1b') + tx(60, 38, label, 6.5, '#9aa4b2') + patas([50, 60, 70], 46, 66);
+    },
+    to220: function (label, n) {
+      var xs = n === 5 ? [40, 50, 60, 70, 80] : [44, 60, 76];
+      return rc(34, 4, 52, 16, '#aeb7c3', 2) + ci(60, 11, 3.5, BG) + rc(34, 20, 52, 26, '#1b1b1b', 2) + tx(60, 36, label, 7.5, '#9aa4b2') + patas(xs, 46, 66);
+    },
+    dip: function (n, label, k) {
+      var s = rc(24, 20, 72, 30, '#1b1b1b', 2) + ci(24, 35, 4, BG), i, x;
+      for (i = 0; i < k; i++) {
+        x = k === 1 ? 58 : 30 + i * (60 / (k - 1));
+        s += rc(x, 14, 4, 6, LD) + rc(x, 50, 4, 6, LD);
+      }
+      return s + tx(62, 38, label, 8, '#9aa4b2');
+    },
+    relay: function (label) {
+      return rc(16, 6, 88, 52, '#2f6fb0', 4) + rc(24, 12, 72, 16, '#e6edf3', 2) + tx(60, 23, label, 6.5, '#12335a') +
+        tx(60, 46, '12VDC 10A 250VAC', 6, '#dbe8f6') + patas([30, 46, 62, 78, 92], 58, 66);
+    },
+    fuse: function () {
+      return rc(22, 26, 76, 18, 'rgba(200,225,245,.25)', 4, '#9fb3c8') + rc(16, 25, 12, 20, '#d4af37', 3) + rc(92, 25, 12, 20, '#d4af37', 3) +
+        pa('M28 35L45 31L60 39L75 31L92 35', 'none', '#cfd6df', 1.4);
+    },
+    tfuse: function () {
+      return ln(4, 35, 116, 35) + rc(42, 26, 36, 18, '#d9d9d9', 5) + tx(60, 38, '130°C', 7, '#222');
+    },
+    sw: function () {
+      return rc(34, 12, 52, 42, '#2b2b2b', 4) + ci(60, 33, 13, '#d6d9de', '#888') + patas([40, 52, 68, 80], 54, 66);
+    },
+    buzzer: function () {
+      return ci(60, 32, 28, '#1b1b1b') + ci(60, 32, 5, '#555') + tx(40, 22, '+', 10) + ln(48, 58, 48, 68) + ln(72, 58, 72, 68);
+    },
+    xtal: function (label) {
+      return rc(36, 10, 48, 34, '#cfd6df', 16, '#8d97a5') + tx(60, 31, label, 8, '#333') + ln(50, 44, 50, 64) + ln(70, 44, 70, 64);
+    },
+    battery: function () {
+      return rc(14, 14, 92, 48, '#2a3140', 4) + rc(14, 14, 92, 10, '#3a4356', 4) + tx(60, 46, '12V 7Ah', 11) +
+        rc(26, 8, 12, 8, '#d62828', 1) + rc(82, 8, 12, 8, '#6b7280', 1);
+    },
+    jack: function () {
+      return rc(30, 14, 60, 36, '#1b1b1b', 4) + ci(60, 32, 12, '#333', '#777') + ci(60, 32, 3.5, '#aaa') + patas([42, 60, 78], 50, 66);
+    },
+    module: function (tipo, label) {
+      if (tipo === 'buck' || tipo === 'boost') {
+        var c = tipo === 'buck' ? '#1b5fb5' : '#1b7f5b';
+        return rc(8, 6, 104, 58, c, 4) + rc(42, 14, 24, 24, '#1e1e1e', 2) + ci(24, 24, 9, '#222', '#555') + ci(24, 46, 7, '#222', '#555') +
+          rc(76, 14, 18, 12, '#1b1b1b', 1) + rc(80, 38, 20, 14, '#2b6cc4', 2) + ci(90, 45, 4, '#d8b14a') + rc(8, 54, 26, 10, '#2e7d32', 1) + rc(86, 54, 26, 10, '#2e7d32', 1) + tx(60, 54, label, 7);
+      }
+      if (tipo === 'tp4056') {
+        return rc(26, 8, 68, 54, '#1b5fb5', 4) + rc(20, 16, 20, 20, '#cfd6df', 2) + rc(52, 22, 16, 14, '#1b1b1b', 1) + ci(80, 22, 3, '#d62828') + ci(80, 32, 3, '#2ecc71') +
+          tx(62, 52, label, 8);
+      }
+      if (tipo === 'h') {
+        var i, s = rc(8, 6, 104, 58, '#b3261e', 4) + rc(38, 10, 40, 36, '#1b1b1b', 2);
+        for (i = 0; i < 5; i++) s += '<line x1="' + (44 + i * 7) + '" y1="12" x2="' + (44 + i * 7) + '" y2="44" stroke="#4b5563" stroke-width="1.5"/>';
+        return s + rc(10, 50, 24, 12, '#2e7d32', 1) + rc(86, 50, 24, 12, '#2e7d32', 1) + tx(60, 58, label, 8);
+      }
+      return rc(8, 6, 104, 58, '#1b5fb5', 4) + rc(16, 12, 44, 38, '#3d82cc', 3) + rc(76, 38, 28, 18, '#2e7d32', 2) + ci(80, 18, 3, '#2ecc71') + tx(38, 36, label, 8);
+    }
+  };
+
+  function ilu(dib) {
+    var f = D[dib[0]];
+    return '<svg class="dib" viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustración">' +
+      rc(0, 0, 120, 70, BG, 8) + f.apply(null, dib[1] || []) + '</svg>';
+  }
+
+  /* Símbolos electrónicos: [trazo, extras] en caja 60 × 40 */
+  var SY = {
+    res: ['M2 20H12L15 10L21 30L27 10L33 30L39 10L45 30L48 20H58'],
+    pot: ['M2 26H12L15 18L21 34L27 18L33 34L39 18L45 34L48 26H58M30 4V18M26 14L30 18L34 14'],
+    ntc: ['M2 20H12M12 12H48V28H12ZM48 20H58M8 36L50 4', '<text x="38" y="38" font-size="8" fill="currentColor" stroke="none">-t°</text>'],
+    ptc: ['M2 20H12M12 12H48V28H12ZM48 20H58M8 36L50 4', '<text x="38" y="38" font-size="8" fill="currentColor" stroke="none">+t°</text>'],
+    mov: ['M2 20H12M12 12H48V28H12ZM48 20H58M8 36L50 4', '<text x="38" y="38" font-size="8" fill="currentColor" stroke="none">U</text>'],
+    ldr: ['M2 24H12M12 16H48V32H12ZM48 24H58M4 6L14 14M10 14H14V10M12 2L22 10M18 10H22V6'],
+    cap: ['M2 20H25M25 8V32M35 8V32M35 20H58'],
+    elec: ['M2 20H25M25 8V32M35 8Q31 20 35 32M35 20H58', '<text x="14" y="14" font-size="9" fill="currentColor" stroke="none">+</text>'],
+    ind: ['M2 24H8A5 6 0 0 1 18 24A5 6 0 0 1 28 24A5 6 0 0 1 38 24A5 6 0 0 1 48 24H58'],
+    trafo: ['M6 12H10A4 5 0 0 1 18 12A4 5 0 0 1 26 12A4 5 0 0 1 34 12A4 5 0 0 1 42 12H54M6 30H10A4 5 0 0 1 18 30A4 5 0 0 1 26 30A4 5 0 0 1 34 30A4 5 0 0 1 42 30H54M10 20H50M10 23H50'],
+    diode: ['M2 20H20M20 8L38 20L20 32ZM38 8V32M38 20H58'],
+    schottky: ['M2 20H20M20 8L38 20L20 32ZM33 11V8H38V32H43V29M38 20H58'],
+    zener: ['M2 20H20M20 8L38 20L20 32ZM34 11L38 8V32L42 29M38 20H58'],
+    led: ['M2 20H20M20 8L38 20L20 32ZM38 8V32M38 20H58M28 8L36 1M33 1H36V4M34 14L42 7M39 7H42V10'],
+    tvs: ['M2 20H10M10 8L26 20L10 32ZM42 8L26 20L42 32ZM26 8V32M42 20H58'],
+    bridge: ['M30 4L56 20L30 36L4 20ZM0 20H4M56 20H60M30 0V4M30 36V40', '<text x="12" y="14" font-size="8" fill="currentColor" stroke="none">~</text><text x="43" y="14" font-size="8" fill="currentColor" stroke="none">~</text>'],
+    npn: ['M46 20A14 14 0 1 1 18 20A14 14 0 1 1 46 20M2 20H22M22 10V30M22 15L34 8V2M22 25L34 32V38', '<path d="M29 31L34 32L32 27Z" fill="currentColor"/>'],
+    pnp: ['M46 20A14 14 0 1 1 18 20A14 14 0 1 1 46 20M2 20H22M22 10V30M22 15L34 8V2M22 25L34 32V38', '<path d="M27 14L26 19L31 17Z" fill="currentColor"/>'],
+    nmos: ['M2 28H14M14 10V30M20 10V15M20 18V22M20 25V30M20 12H46V2M20 28H46V38M20 20H32V28M26 17L20 20L26 23'],
+    pmos: ['M2 28H14M14 10V30M20 10V15M20 18V22M20 25V30M20 12H46V2M20 28H46V38M20 20H32V28M26 17L32 20L26 23'],
+    igbt: ['M2 28H14M14 10V30M20 10V30M20 15L46 8V2M20 25L46 32V38'],
+    scr: ['M2 20H20M20 8L38 20L20 32ZM38 8V32M38 20H58M38 26L50 38'],
+    triac: ['M2 20H14M14 6L30 20L14 34ZM30 6V34M46 6L30 20L46 34ZM46 20H58M40 28L52 38'],
+    opamp: ['M10 4V36L52 20ZM2 12H10M2 28H10M52 20H58', '<text x="13" y="15" font-size="9" fill="currentColor" stroke="none">−</text><text x="13" y="31" font-size="9" fill="currentColor" stroke="none">+</text>'],
+    opto: ['M6 4H54V36H6ZM12 12L22 20L12 28ZM22 12V28M26 14L34 14M44 12V28M44 16L50 12M44 24L50 28'],
+    reg: ['M10 6H50V34H10ZM2 14H10M50 14H58M30 34V40', '<text x="13" y="24" font-size="7" fill="currentColor" stroke="none">IN</text><text x="34" y="24" font-size="7" fill="currentColor" stroke="none">OUT</text>'],
+    ic: ['M12 4H48V36H12ZM6 10H12M6 16H12M6 22H12M6 28H12M48 10H54M48 16H54M48 22H54M48 28H54'],
+    relay: ['M4 12H22V28H4ZM13 4V12M13 28V36M36 36V24M36 24L48 10M48 36V30M48 14V4'],
+    fuse: ['M2 20H12M12 13H48V27H12ZM48 20H58M12 20H48'],
+    xtal: ['M2 20H20M20 8V32M40 8V32M40 20H58M26 10H34V30H26Z'],
+    sw: ['M2 28H18M42 28H58M18 28L40 12', '<circle cx="18" cy="28" r="2" fill="currentColor"/><circle cx="42" cy="28" r="2" fill="currentColor"/>'],
+    buzzer: ['M44 20A14 14 0 1 1 16 20A14 14 0 1 1 44 20M2 14H16M2 26H16', '<text x="19" y="18" font-size="9" fill="currentColor" stroke="none">+</text>'],
+    bat: ['M2 20H20M20 8V32M28 14V26M36 8V32M44 14V26M44 20H58', '<text x="12" y="14" font-size="9" fill="currentColor" stroke="none">+</text>'],
+    module: ['M10 6H50V34H10ZM2 14H10M2 26H10M50 14H58M50 26H58', '<text x="14" y="23" font-size="7" fill="currentColor" stroke="none">IN</text><text x="32" y="23" font-size="7" fill="currentColor" stroke="none">OUT</text>']
+  };
+  function sym(key) {
+    var s = SY[key] || SY.ic;
+    return '<svg class="sim" viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + s[0] + '"/>' + (s[1] || '') + '</svg>';
+  }
+
+  /* =====================================================================
+     CATÁLOGO
+     E(cat, id, nombre, [dibujo, args], símbolo, ejemplos, qué hace, cómo identificarlo,
+       cómo probarlo, dónde rescatarlo, fallas comunes)
+     ===================================================================== */
+  function E(cat, id, n, dib, sim, ej, que, ident, prueba, rescate, falla) {
+    var o = { cat: cat, id: id, n: n, dib: dib, sim: sim, ej: ej, que: que, ident: ident, prueba: prueba, rescate: rescate, falla: falla };
+    o.q = norm([n, ej, cat, que, ident, rescate].join(' '));
+    return o;
+  }
+  var CATS = ['Resistencias', 'Capacitores', 'Bobinas', 'Diodos', 'Transistores', 'Integrados', 'Electromecánicos', 'Módulos'];
+
+  var CAT = [
+    E('Resistencias', 'res_axial', 'Resistencia de carbón / película metálica', ['axial', [['#8b4513', '#111', '#d62828', '#d4af37'], '#d9b779']], 'res',
+      '1/4 W, 1/2 W · 10 Ω a 10 MΩ · 1 kΩ = marrón-negro-rojo',
+      'Limita la corriente y fija tensiones en divisores.',
+      'Cuerpo cilíndrico con 4 o 5 anillos de color. Los primeros dan el valor y el siguiente el multiplicador; el último, la tolerancia (dorado 5 %, plateado 10 %). Colores: negro 0, marrón 1, rojo 2, naranja 3, amarillo 4, verde 5, azul 6, violeta 7, gris 8, blanco 9.',
+      'Multímetro en Ω con una pata fuera del circuito. Debe estar dentro de la tolerancia.',
+      'En todo equipo: fuentes de PC, TV, UPS, cargadores, tarjetas de control.',
+      'Se abre (infinito) por sobrecarga, ennegrecida o quebrada; cambia de valor si estuvo muy caliente.'),
+    E('Resistencias', 'res_pot', 'Resistencia de potencia (cerámica / bobinada)', ['powres', ['5W 0.22Ω']], 'res',
+      '2 W a 50 W · 0.1 Ω a 10 kΩ · “5W 0R22” = 0.22 Ω',
+      'Disipa mucho calor: limita corrientes grandes, mide corriente (shunt) o descarga capacitores.',
+      'Cuerpo cerámico blanco o beige, rectangular o cilíndrico, con valor y potencia impresos (5W 10Ω). La R entre cifras es la coma: R22 = 0.22 Ω.',
+      'Ω con una pata fuera del circuito; en valores muy bajos resta la resistencia de las puntas.',
+      'Resistencias de arranque y de fuente de fuentes conmutadas, emisores de amplificadores, balastros, hornos y calentadores.',
+      'Se abre y suele indicar que el semiconductor que protegía (MOSFET, transistor) está en corto.'),
+    E('Resistencias', 'res_smd', 'Resistencia SMD', ['smd', ['103']], 'res',
+      '0603, 0805, 1206 · 103 = 10 kΩ · 4R7 = 4.7 Ω · 000 = puente de 0 Ω',
+      'Igual que la resistencia normal, pero para montaje superficial.',
+      'Chip negro rectangular con extremos plateados y 3 o 4 cifras: las primeras son el valor y la última el número de ceros (472 = 4.7 kΩ; 1002 = 10 kΩ).',
+      'Ω en el propio componente; en circuito puede leer menos por caminos en paralelo.',
+      'Placas de TV, monitores, routers, cargadores, laptops, celulares.',
+      'Se agrieta por flexión o se abre; si el código está borrado, mide su valor.'),
+    E('Resistencias', 'pot', 'Potenciómetro', ['pot', ['B10K']], 'pot',
+      'B10K, A50K, B100K · lineal (B) o logarítmico (A)',
+      'Resistencia variable de tres terminales: regula volumen, brillo o tensión de ajuste.',
+      'Cuerpo cilíndrico con eje giratorio y tres patas. Código: letra de curva (B lineal, A logarítmica) + valor (B10K = 10 kΩ lineal).',
+      'Mide entre los extremos (valor total) y entre el centro y un extremo girando: debe variar suave y sin saltos.',
+      'Amplificadores, radios, minicomponentes, mezcladores y controles de volumen.',
+      'Crepita o salta por suciedad: limpia con limpiador de contactos. Pistas gastadas dan lecturas erráticas.'),
+    E('Resistencias', 'trimmer', 'Trimmer / resistencia ajustable (preset)', ['trimmer', []], 'pot',
+      '3296 (multivuelta), 3386 · 103 = 10 kΩ, 502 = 5 kΩ',
+      'Resistencia que se ajusta con destornillador para calibrar tensión o corriente.',
+      'Pequeño bloque (azul, blanco o amarillo) con un tornillo y tres patas. Códigos tipo 103, 502, 104.',
+      'Como el potenciómetro: Ω entre extremos y centro al girar el tornillo.',
+      'Fuentes conmutadas (ajuste de tensión), amplificadores (bias), monitores, fuentes de banco.',
+      'Pierde el ajuste o se desgasta; anota su posición antes de moverlo.'),
+    E('Resistencias', 'ntc', 'Termistor NTC', ['disc', ['#222', 'NTC 5D-9']], 'ntc',
+      '5D-9, 10D-11, 10D-15 · baja resistencia en frío (2.5–10 Ω) · sensor de 10 kΩ',
+      'Su resistencia baja al calentarse: limita la corriente de arranque en fuentes o mide temperatura.',
+      'Disco negro o verde con dos patas, a veces marcado 5D-9 (5 Ω, 9 mm). En sensores, cápsula pequeña de 10 kΩ.',
+      'En frío mide pocos Ω (limitador) o 10 kΩ (sensor) a 25 °C; al calentarlo con la mano debe bajar.',
+      'Entrada de fuentes conmutadas, UPS, cargadores, planchas, hornos, laptops, impresoras.',
+      'Se abre o se agrieta: la fuente no arranca y no hay otro daño aparente.'),
+    E('Resistencias', 'ptc', 'Termistor PTC', ['disc', ['#2f6fb0', 'PTC']], 'ptc',
+      'Desmagnetizador de TV (2–3 patas), arranque de compresor, fusible reseteable',
+      'Su resistencia sube al calentarse: protege, calienta o ayuda a arrancar motores.',
+      'Disco o bloque con 2–3 patas marcado PTC, 18 Ω, 120 °C.',
+      'En frío da pocos Ω a decenas de Ω; debe subir al calentarse.',
+      'TV y monitores de tubo (desmagnetizador), neveras (arranque de compresor), cargadores y baterías (fusible reseteable).',
+      'Se agrieta o queda abierto: el motor no arranca o no desmagnetiza.'),
+    E('Resistencias', 'mov', 'Varistor (MOV)', ['disc', ['#2f6fb0', '10D471K']], 'mov',
+      '7D471K, 10D471K (275 V AC), 14D471K, 20D511K',
+      'Absorbe picos de tensión de la red para proteger la fuente.',
+      'Disco azul o naranja con dos patas y código: 471 = 470 V de varistor (admite 275 V AC); 10D = 10 mm de diámetro.',
+      'Debe leer resistencia muy alta (OL). Si da un valor bajo, está en corto. Visual: quemaduras o grietas.',
+      'Regletas, UPS, fuentes de PC, TV, cargadores: todo equipo conectado a la red.',
+      'Se quema por picos y se ennegrece o parte; a veces se lleva el fusible.'),
+    E('Resistencias', 'ldr', 'Fotorresistencia (LDR)', ['ldr', []], 'ldr',
+      'GL5528 · con luz: pocos kΩ; a oscuras: más de 1 MΩ',
+      'Su resistencia baja con la luz: sensores de luz y luces automáticas.',
+      'Disco de unos 5 mm con una pista en zigzag y dos patas.',
+      'Mide Ω tapándola y alumbrándola: debe cambiar mucho.',
+      'Lámparas automáticas, fotoceldas de alumbrado, juguetes, alarmas.',
+      'Envejece o se opaca: respuesta lenta o fija.'),
+
+    E('Capacitores', 'elec', 'Capacitor electrolítico', ['elec', ['#1e3a8a', '1000µF', '25V']], 'elec',
+      '100 µF 25 V, 470 µF 16 V, 1000 µF 35 V, 220 µF 400 V',
+      'Almacena energía y alisa la tensión: filtros de fuente y acoplo de audio.',
+      'Cilindro con capacidad (µF) y tensión máxima impresas. La banda con signos − marca la pata negativa; la pata larga es la positiva.',
+      'Con medidor de capacitancia/ESR. Visual: tapa abombada, líquido en la base, olor. Descárgalo antes de medir.',
+      'Fuentes de PC, TV, cargadores, UPS, amplificadores, placas madre, monitores.',
+      'Es la falla n.º 1 de las fuentes: se seca, sube su ESR y se abomba. Cámbialo por uno de igual capacidad, mismo o mayor voltaje y 105 °C.'),
+    E('Capacitores', 'cdisc', 'Capacitor cerámico de disco', ['disc', ['#c58a3e', '104', 18]], 'cap',
+      '104 = 100 nF, 103 = 10 nF, 102 = 1 nF, 22 = 22 pF · 50 V a 2 kV',
+      'Filtra ruido y desacopla; pequeño y sin polaridad.',
+      'Disco o gota de color café, naranja o azul con código de 3 cifras en pF: dos primeras + ceros (104 = 10 + 0000 pF = 100 nF).',
+      'Con capacímetro; con multímetro solo se detecta si está en corto (0 Ω) o abierto.',
+      'Prácticamente todas las placas.',
+      'Cortocircuito por pico (los de alta tensión) o abierto por golpe o calor.'),
+    E('Capacitores', 'mlcc', 'Capacitor cerámico SMD (MLCC)', ['mlcc', []], 'cap',
+      '0402, 0603, 0805 · 100 nF, 1 µF, 10 µF',
+      'Desacopla y filtra en placas modernas.',
+      'Chip pequeño marrón o gris, normalmente sin marcas: el valor no se lee, hay que medirlo.',
+      'Capacímetro; mide 0 Ω si está en corto.',
+      'Laptops, celulares, TV, routers, tarjetas de video.',
+      'Se rompe por flexión de la placa y entra en corto; calienta al aplicarle tensión.'),
+    E('Capacitores', 'film', 'Capacitor de película (poliéster / polipropileno)', ['film', ['#d6452d', '104J 630V']], 'cap',
+      'MKT, MKP · 100 nF 630 V · 0.47 µF 275 V',
+      'Capacitor estable para filtros, temporizadores, audio y fuentes.',
+      'Caja rectangular o cilíndrica (roja, amarilla, azul) con valor y tensión: 104J = 100 nF ±5 %.',
+      'Capacímetro; revisa hinchazón o partiduras.',
+      'Fuentes conmutadas, balastros, amplificadores, lavadoras, motores.',
+      'Se quema (olor) o pierde capacidad; en motores, arranca mal.'),
+    E('Capacitores', 'x2', 'Capacitor de seguridad X2 / Y', ['film', ['#6b7a8f', 'X2 275V~', 76]], 'cap',
+      'X2 0.1 µF 275 V AC · Y1/Y2 2.2 nF 250 V',
+      'Filtran interferencias de la línea; X entre fase y neutro, Y entre línea y tierra.',
+      'Caja translúcida o azul con las marcas X2 o Y2 y certificaciones (VDE, UL). Tensión en AC (275 V).',
+      'Capacímetro; nunca debe medir 0 Ω.',
+      'Entrada de fuentes de PC, TV, cargadores, electrodomésticos.',
+      'Se abre o entra en corto tras picos; un Y en corto es peligroso (descarga). Reemplaza solo por la misma clase.'),
+    E('Capacitores', 'tant', 'Capacitor de tántalo', ['tant', []], 'elec',
+      '10 µF 16 V, 100 µF 6.3 V · la banda marca el positivo',
+      'Capacitor compacto y estable, de baja ESR.',
+      'Gota o chip amarillo, naranja o negro con una banda que marca el positivo (+).',
+      'Capacímetro; si se calienta al aplicarle tensión o da 0 Ω, está dañado.',
+      'Placas madre, laptops, módulos, celulares viejos.',
+      'Entra en corto y se calienta, humea o explota si se invierte la polaridad o se excede la tensión.'),
+
+    E('Bobinas', 'ind', 'Inductor / bobina', ['axial', [['#8b4513', '#111', '#d62828', '#d4af37'], '#2e7d5b']], 'ind',
+      '10 µH a 1 mH · codificado por colores · toroide con cobre',
+      'Almacena energía en un campo magnético: filtra y convierte tensión en fuentes conmutadas.',
+      'Cilindro con colores (parece una resistencia) o toroide de ferrita con alambre de cobre.',
+      'Continuidad (pocos Ω); con medidor LCR, la inductancia.',
+      'Fuentes conmutadas, módulos reductores, filtros de línea.',
+      'Se abre o tiene espiras en corto; sobrecalienta y se oscurece.'),
+    E('Bobinas', 'choke', 'Choke de filtro de línea / ferrita', ['toroid', ['#3d4a5c']], 'ind',
+      'Filtro EMI de 2 devanados · perla de ferrita',
+      'Bloquea ruido de alta frecuencia en la entrada de red o en cables.',
+      'Anillo o núcleo en E con dos devanados de cobre, a la entrada de la fuente. La perla de ferrita es un cilindro negro sin marcas.',
+      'Continuidad en cada devanado (≈ 0.1–1 Ω).',
+      'Fuentes de PC, TV, cargadores, cables con núcleo cilíndrico.',
+      'Rara vez falla; un devanado abierto corta la alimentación.'),
+    E('Bobinas', 'trafo_fe', 'Transformador de hierro (láminas)', ['trafo', []], 'trafo',
+      '110/220 V a 12 V 1 A, 2×18 V 3 A · 50/60 Hz',
+      'Baja (o sube) la tensión de red con aislamiento.',
+      'Bloque pesado de láminas de hierro con bobina de cobre; etiqueta con tensiones y VA.',
+      'Resistencia del primario (decenas a cientos de Ω) y del secundario (pocos Ω); tensión AC del secundario con precaución.',
+      'UPS, cargadores y eliminadores antiguos, amplificadores, radios, impresoras, reguladores de voltaje.',
+      'Primario abierto (sin salida) o espiras en corto (calienta y quema fusibles).'),
+    E('Bobinas', 'trafo_hf', 'Transformador de ferrita (fuente conmutada)', ['trafoHF', []], 'trafo',
+      'EE16, EE25, EI33, ETD · 5 a 12 pines',
+      'Transfiere energía a alta frecuencia en fuentes conmutadas, aislando primario y secundario.',
+      'Núcleo de ferrita con carrete y cinta amarilla; varias patas; cerca del MOSFET y los diodos de salida.',
+      'Continuidad de devanados; las fallas internas solo se detectan con LCR o probador.',
+      'Cargadores, fuentes de PC, TV, routers, decodificadores.',
+      'Raras; soldaduras frías en las patas dan fallas intermitentes.'),
+
+    E('Diodos', 'd_rect', 'Diodo rectificador', ['diodeAx', ['1N4007']], 'diode',
+      '1N4001 a 1N4007 (1 A), 1N5408 (3 A), 6A10 (6 A) · la banda es el cátodo',
+      'Deja pasar la corriente en un solo sentido: convierte AC en DC.',
+      'Cilindro negro con una banda plateada que marca el cátodo (−) y el código impreso.',
+      'Modo diodo: 0.5–0.7 V en directa y OL en inversa. 0 V en ambos sentidos = corto; OL en ambos = abierto.',
+      'Fuentes, cargadores, adaptadores, amplificadores, balastros.',
+      'Entra en corto por sobrecorriente y quema el fusible.'),
+    E('Diodos', 'd_sch', 'Diodo Schottky', ['diodeAx', ['SB560']], 'schottky',
+      '1N5819 (1 A), SB540 (5 A), MBR1045 (TO-220), SR560',
+      'Diodo rápido con poca caída (0.2–0.4 V): rectifica la salida de fuentes conmutadas.',
+      'Parecido al rectificador, con códigos SB, SR o MBR; los de potencia son TO-220 de 3 patas con disipador.',
+      'Modo diodo: 0.15–0.4 V en directa; en corto mide 0 V.',
+      'Secundario de fuentes de PC, cargadores, módulos reductores.',
+      'Entra en corto: salida baja o nula y calienta.'),
+    E('Diodos', 'd_fast', 'Diodo rápido / ultrarrápido', ['diodeAx', ['FR107']], 'diode',
+      'FR107, UF4007, HER207 · 1N4148 (señal, de vidrio)',
+      'Rectifica pulsos de alta frecuencia: snubbers y salidas de fuentes conmutadas.',
+      'Igual que el rectificador con código FR, UF o HER; el 1N4148 es diminuto y de vidrio.',
+      'Modo diodo ≈ 0.6–0.9 V en directa.',
+      'Snubber y secundarios de fuentes conmutadas, cargadores, balastros electrónicos.',
+      'Corto o fuga que daña al MOSFET.'),
+    E('Diodos', 'zener', 'Diodo Zener', ['diodeAx', ['1N4733']], 'zener',
+      '1N4728 (3.3 V) a 1N4742 (12 V), BZX55C5V1 · 0.5 W, 1 W',
+      'Fija una tensión de referencia o protege: conduce en inversa al llegar a su tensión.',
+      'Cilindro de vidrio o plástico con banda; el código indica el voltaje (5V1 = 5.1 V).',
+      'Modo diodo como cualquier diodo; para medir su tensión hace falta una fuente con resistencia limitadora.',
+      'Fuentes, cargadores, protección de compuertas, reguladores.',
+      'Entra en corto (protegía algo) o tiene fuga: la salida cae.'),
+    E('Diodos', 'led', 'LED', ['led', ['#e63946']], 'led',
+      '3 mm, 5 mm, 10 mm · rojo 2 V, blanco 3 V · 20 mA',
+      'Emite luz cuando circula corriente en directa.',
+      'Cápsula de plástico de colores; la pata larga es el ánodo (+) y el lado plano del borde es el cátodo (−).',
+      'Modo diodo: se ilumina débilmente. Prueba rápida: 3 V con una resistencia de 330 Ω.',
+      'Casi todos los equipos: indicadores en fuentes, TV, UPS, routers.',
+      'Se apaga por exceso de corriente o por soldaduras.'),
+    E('Diodos', 'tvs', 'Diodo TVS (supresor de picos)', ['diodeAx', ['SMBJ12A']], 'tvs',
+      'P6KE18, 1.5KE, SMBJ12A, SMAJ5.0A',
+      'Absorbe picos de tensión en líneas de entrada.',
+      'Parece un diodo (axial o SMD) marcado P6KE18 o SMBJ12; algunos son bidireccionales (sin banda).',
+      'Modo diodo; en corto da 0 V.',
+      'Entradas de alimentación, USB, puertos de comunicación.',
+      'Entra en corto tras un pico y puede poner la fuente en corto.'),
+    E('Diodos', 'puente', 'Puente rectificador', ['bridge', ['KBP307']], 'bridge',
+      'KBP307 (3 A), GBU806 (8 A), KBPC3510 (35 A), DB107, 2W10 · 4 patas: ~ ~ + −',
+      'Cuatro diodos en un cuerpo: rectifica AC a DC pulsante.',
+      'Cuadrado, rectangular o redondo con 4 terminales: dos ~ (AC), un + y un −. Marcas KBP, GBU, KBPC, DB.',
+      'Modo diodo: de ~ a + y de − a ~ da 0.5–0.7 V; en inversa, OL. Cualquier 0 V indica corto.',
+      'Fuentes de PC, UPS, TV, cargadores, microondas, lavadoras.',
+      'Un diodo en corto quema el fusible; a veces se parte o se ennegrece.'),
+
+    E('Transistores', 'bjt_s', 'Transistor bipolar de señal (BJT, TO-92)', ['to92', ['BC547']], 'npn',
+      'NPN: BC547, 2N2222, 2N3904, C945 · PNP: BC557, 2N2907, 2N3906, A733',
+      'Amplifica o conmuta señales pequeñas.',
+      'Cuerpo negro semicilíndrico con tres patas (E–B–C); el código está en la cara plana.',
+      'Modo diodo: base–emisor y base–colector dan 0.6–0.7 V en un sentido y OL al revés (NPN: positivo a la base). 0 V entre patas = corto.',
+      'Controles, fuentes, drivers de relé, balastros, juguetes.',
+      'Corto colector–emisor o abierto; la ganancia baja con el tiempo.'),
+    E('Transistores', 'bjt_p', 'Transistor bipolar de potencia (TO-220 / TO-3 / TO-247)', ['to220', ['TIP41C', 3]], 'npn',
+      'TIP31/32/41/42, 2SC5200/2SA1943, MJ15003/4, D882, BD139/140',
+      'Maneja corrientes altas: etapas de salida de audio, reguladores y drivers.',
+      'Cuerpo negro con lengüeta metálica (TO-220) o lata metálica (TO-3); 3 terminales; atornillado a un disipador.',
+      'Modo diodo base–emisor y base–colector; busca continuidad colector–emisor (en corto). Cuidado con el aislante de mica.',
+      'Amplificadores, reguladores de voltaje, fuentes de banco, UPS antiguas, TV de tubo.',
+      'Corto C–E por sobrecalentamiento; suele dañar resistencias de emisor y drivers.'),
+    E('Transistores', 'darl', 'Transistor Darlington', ['to220', ['TIP122', 3]], 'npn',
+      'TIP120/121/122 (NPN), TIP125/126/127 (PNP), BDX53 · ULN2003 (7 en un chip)',
+      'Dos transistores en uno: ganancia muy alta para manejar relés y motores.',
+      'Igual que un TO-220 de potencia con código TIP12x; el ULN2003 es un DIP-16.',
+      'Modo diodo base–emisor: ≈ 1.2 V en directa (dos uniones).',
+      'Fuentes lineales, controles de motor, electrodomésticos.',
+      'Corto C–E; se calienta mucho sin disipador.'),
+    E('Transistores', 'nmos', 'MOSFET canal N', ['to220', ['IRF3205', 3]], 'nmos',
+      'IRF540, IRF3205, IRFZ44N, 2N60, 7N60, K2645 (600 V), P75NF75',
+      'Interruptor electrónico rápido: conmuta potencia en fuentes, inversores y motores.',
+      'TO-220, TO-247 o DPAK de 3 patas: G (compuerta), D (drenaje), S (fuente); la lengüeta es el drenaje. Códigos IRFxxx, xNxx.',
+      'Descarga la compuerta. Modo diodo: S a D ≈ 0.5 V (diodo interno); G sin continuidad con D ni S. D–S en corto = dañado.',
+      'Fuentes de PC (primario y secundario), UPS (inversor), cargadores, controladores de motor, laptops.',
+      'Corto D–S (lo más común): quema el fusible y la resistencia de fuente. Reemplaza junto con el IC controlador.'),
+    E('Transistores', 'pmos', 'MOSFET canal P', ['to220', ['IRF9540', 3]], 'pmos',
+      'IRF9540, FQP27P06, AO3401 (SMD), SI2301',
+      'Interruptor del lado positivo: protección contra polaridad inversa y conmutación de carga.',
+      'Igual que el N, con código P (IRF9xxx, FQPxxP); conduce con la compuerta más negativa que la fuente.',
+      'Como el canal N, con el diodo interno en sentido opuesto (D a S).',
+      'Laptops, cargadores de batería, placas con protección de polaridad, módulos de baterías.',
+      'Corto D–S o compuerta dañada por sobretensión.'),
+    E('Transistores', 'igbt', 'IGBT', ['to220', ['G4PC50', 3]], 'igbt',
+      'G4PC50UD, IRG4PC50, GT40T101, FGA25N120 · 600 a 1200 V',
+      'Mezcla de MOSFET y bipolar: conmuta altas tensiones y corrientes (inducción, soldadoras, variadores).',
+      'Cuerpo TO-247 de 3 patas (G, C, E) con lengüeta metálica; códigos con G y tensión alta.',
+      'Modo diodo C–E (diodo interno ≈ 0.5 V); G sin continuidad. C–E en corto = dañado.',
+      'Microondas inverter, cocinas de inducción, soldadoras, variadores, aires acondicionados inverter.',
+      'Corto por sobrecorriente o sobretemperatura; suelen morir junto con su driver.'),
+    E('Transistores', 'scr', 'SCR (tiristor)', ['to220', ['TYN616', 3]], 'scr',
+      'TYN612, C106, BT151, 2P4M',
+      'Interruptor controlado de una vía: conduce al recibir un pulso en la compuerta.',
+      'TO-220 o TO-92 con tres patas: ánodo, cátodo y compuerta (G).',
+      'Sin continuidad A–K hasta dar un pulso en G; G–K ≈ 0.6 V.',
+      'Fuentes de banco, cargadores de batería, taladros, reguladores de potencia.',
+      'En corto A–K: la carga queda siempre encendida.'),
+    E('Transistores', 'triac', 'TRIAC', ['to220', ['BT136', 3]], 'triac',
+      'BT136, BT137, BTA16, TIC226, Z0607',
+      'Interruptor de corriente alterna: dimmers, controles de velocidad, calentadores.',
+      'TO-220 con 3 patas (MT1, MT2, G); la lengüeta suele ser MT2.',
+      'Sin continuidad entre MT1 y MT2 hasta disparar G; en corto = dañado.',
+      'Dimmers, lavadoras, licuadoras, hornos eléctricos, planchas, taladros.',
+      'En corto: carga siempre encendida; abierto: nunca conduce.'),
+
+    E('Integrados', 'reg78', 'Regulador lineal fijo (78xx / 79xx)', ['to220', ['7812', 3]], 'reg',
+      '7805, 7809, 7812, 7815 · 7905, 7912 (negativos) · LM1117, AMS1117 (SMD)',
+      'Entrega una tensión fija y estable a partir de una mayor.',
+      'TO-220 de 3 patas: IN, GND, OUT; los dos últimos dígitos son los voltios (7812 = 12 V).',
+      'Con el equipo encendido: entrada ≥ salida + 2 V y salida fija. Entrada = salida indica corto interno.',
+      'Fuentes lineales, amplificadores, receptores, decodificadores, cargadores.',
+      'Salida 0 V o salida = entrada; calienta sin disipador.'),
+    E('Integrados', 'lm317', 'Regulador ajustable (LM317 / LM338)', ['to220', ['LM317', 3]], 'reg',
+      'LM317 (1.5 A), LM338 (5 A), LM350 · Vout = 1.25 × (1 + R2/R1)',
+      'Regulador de tensión ajustable con dos resistencias o un potenciómetro.',
+      'TO-220 con pines ADJ, OUT, IN; R1 (240 Ω) y R2 fijan la salida.',
+      'Entre OUT y ADJ debe haber 1.25 V.',
+      'Cargadores de batería, fuentes de banco, equipos de laboratorio.',
+      'Sin salida o fuera de ajuste; calienta si cae mucha tensión.'),
+    E('Integrados', 'tl431', 'Referencia TL431', ['to92', ['TL431']], 'reg',
+      'TL431, KA431, AZ431 · referencia 2.5 V',
+      'Mantiene la tensión de salida de fuentes conmutadas junto con un optoacoplador.',
+      'Transistor pequeño TO-92 (o SOT-23) con tres patas (REF, ánodo, cátodo) y la marca 431.',
+      'Fuera de circuito: modo diodo entre ánodo y cátodo. En circuito: la referencia debe estabilizarse en 2.5 V.',
+      'Cargadores, fuentes de PC, fuentes de TV y decodificadores.',
+      'Salida baja, alta o inestable en fuentes conmutadas.'),
+    E('Integrados', 'opto', 'Optoacoplador', ['dip', [4, 'PC817', 2]], 'opto',
+      'PC817, EL817, 4N35, MOC3021 (triac), TLP521',
+      'Transmite una señal con luz aislando dos circuitos (realimentación en fuentes).',
+      'Chip DIP-4 o SMD con un LED por un lado y un fototransistor por el otro; marcado 817 o 4N35.',
+      'Pines 1–2 (LED): modo diodo ≈ 1 V. Pines 3–4: OL sin luz; con el LED encendido (5 V + 1 kΩ) conducen.',
+      'Fuentes conmutadas, cargadores, TV, routers, microondas.',
+      'Pierde ganancia con el tiempo: la fuente sube de tensión o se apaga.'),
+    E('Integrados', 'opamp', 'Amplificador operacional', ['dip', [8, 'LM358', 4]], 'opamp',
+      'LM358, LM324, TL072, NE5532, LM741',
+      'Amplifica señales y compara tensiones.',
+      'DIP-8 o SOIC-8; el pin 1 está marcado con un punto o muesca; códigos LM, TL, NE.',
+      'Revisa la alimentación en su pin y mide entradas y salida con el equipo activo.',
+      'Amplificadores, mezcladores, fuentes de banco, sensores, cargadores.',
+      'Salida pegada a la alimentación, sin respuesta o con ruido.'),
+    E('Integrados', 'ne555', 'Temporizador 555', ['dip', [8, 'NE555', 4]], 'ic',
+      'NE555, LM555, NE556 (doble)',
+      'Genera pulsos y retardos: temporizadores, osciladores y controles PWM.',
+      'DIP-8 con muesca; código NE555 o LM555.',
+      'Con 5–15 V mide la salida (pin 3); sin señal de disparo queda en un nivel fijo.',
+      'Temporizadores, juguetes, luces intermitentes, alarmas, balastros.',
+      'Se calienta o no oscila.'),
+    E('Integrados', 'mcu', 'Microcontrolador', ['dip', [14, 'PIC16F', 7]], 'ic',
+      'PIC16F628, ATmega328, STM32, 8051 · 8 a 64 pines',
+      'Cerebro del equipo: ejecuta el programa y controla pantalla, relés y sensores.',
+      'Chip rectangular con muchas patas y marca del fabricante; a su lado suele haber un cristal.',
+      'Mide su alimentación (3.3 o 5 V) y el reloj del cristal; si ambos están, el chip es sospechoso.',
+      'UPS, electrodomésticos, routers, controladores, televisores.',
+      'Sin programa o por sobretensión; antes revisa sus capacitores de desacople.'),
+    E('Integrados', 'pwm', 'IC controlador PWM (fuentes conmutadas)', ['dip', [8, 'UC3842', 4]], 'ic',
+      'UC3842/43/44/45, TL494, SG3525, TNY2xx, VIPer, ICE2A, OB2269',
+      'Genera los pulsos que manejan el MOSFET de la fuente y regula la salida.',
+      'DIP-8 o SOIC-8 cerca del MOSFET y del optoacoplador; marcado UC384x o similar. Algunos tienen el MOSFET integrado (TNY, VIPer).',
+      'Mide Vcc (8–16 V) y la señal de compuerta con osciloscopio; sin pulsos, sospecha del IC o de las resistencias de arranque.',
+      'Fuentes de PC, TV, cargadores, decodificadores, impresoras.',
+      'Muere junto con el MOSFET; revisa las resistencias de fuente y de arranque.'),
+    E('Integrados', 'audio', 'IC amplificador de audio', ['to220', ['TDA2030', 5]], 'ic',
+      'TDA2030, TDA2050, LM386, LM3886, TDA7294, LA4440',
+      'Amplificador completo en un chip: entrega potencia al parlante.',
+      'TO-220 de 5 pines (TDA20xx, LM3886) o DIP-8 (LM386); lleva disipador atornillado.',
+      'Revisa la alimentación ±, la salida sin parlante (≈ 0 V DC) y busca corto entre pines.',
+      'Minicomponentes, radios, TV, bocinas amplificadas, computadoras de escritorio.',
+      'Corto de salida o DC en el parlante; se calienta y corta.'),
+
+    E('Electromecánicos', 'rele', 'Relé', ['relay', ['SRD-12VDC-SL-C']], 'relay',
+      '5 V, 12 V, 24 V · 10 A/250 V · SRD, JQX-15F, HK19F',
+      'Interruptor eléctrico accionado por una bobina: conmuta cargas de potencia con aislamiento.',
+      'Caja azul, negra o transparente con la tensión de bobina y la corriente de contactos impresas; patas: 2 de bobina y 3 de contactos (COM, NA, NC).',
+      'Bobina (50–400 Ω) y continuidad de contactos: en reposo COM–NC, activo COM–NA; escucha el clic al aplicar tensión.',
+      'UPS, hornos, TV, aires acondicionados, lavadoras, reguladores de voltaje.',
+      'Contactos quemados o pegados, bobina abierta.'),
+    E('Electromecánicos', 'fusible', 'Fusible', ['fuse', []], 'fuse',
+      'Vidrio 5×20 mm de 0.5 a 15 A · lento (T) o rápido (F) · 250 V',
+      'Se abre ante una sobrecorriente y protege el equipo.',
+      'Tubo de vidrio con extremos metálicos, o cerámico; lleva corriente y tensión impresas (T2AL250V). Los SMD son chips negros.',
+      'Continuidad: debe sonar (≈ 0 Ω). Si el hilo está ennegrecido, hubo un corto fuerte.',
+      'Todos los equipos de red: fuentes, UPS, TV, microondas, amplificadores.',
+      'Abierto: casi siempre por otra falla. No lo reemplaces por uno de mayor corriente.'),
+    E('Electromecánicos', 'tfuse', 'Fusible térmico / termostato', ['tfuse', []], 'fuse',
+      'RY 130 °C 10 A, KSD301 (termostato), TF 142 °C',
+      'Corta el circuito al superar una temperatura: protege motores, transformadores y hornos.',
+      'Cápsula cilíndrica con dos cables, o disco metálico con dos patas (termostato); marcado con la temperatura (130 °C).',
+      'Continuidad: debe sonar. Un fusible térmico abierto no se reinicia.',
+      'Transformadores, cafeteras, planchas, hornos, motores, secadores.',
+      'Abierto: el equipo no enciende aunque la placa esté bien.'),
+    E('Electromecánicos', 'sw', 'Interruptor / pulsador', ['sw', []], 'sw',
+      'Táctil 6×6 mm, interruptor basculante, DIP switch',
+      'Abre o cierra un circuito con la mano.',
+      'Botón de 4 patas (táctil) o palanca marcada ON/OFF; los de red llevan tensión y corriente impresas.',
+      'Continuidad al pulsarlo; los pulsadores sucios fallan a ratos.',
+      'Todo tipo de equipos.',
+      'Contactos sucios o desgastados.'),
+    E('Electromecánicos', 'buzzer', 'Zumbador (buzzer)', ['buzzer', []], 'buzzer',
+      'Activo 5–12 V (suena con DC), pasivo (necesita señal)',
+      'Genera pitidos de aviso.',
+      'Cilindro negro de unos 12 mm con orificio; el signo + marca el positivo.',
+      'Aplica 5 V directos: el activo suena; el pasivo solo hace un tic.',
+      'UPS, alarmas, microondas, lavadoras, juguetes.',
+      'Mudo por bobina abierta o disco partido.'),
+    E('Electromecánicos', 'xtal', 'Cristal de cuarzo', ['xtal', ['16.000']], 'xtal',
+      '32.768 kHz (reloj), 4 a 25 MHz (HC-49)',
+      'Da la frecuencia exacta de reloj a un microcontrolador.',
+      'Cápsula metálica plateada con la frecuencia en MHz impresa y dos patas.',
+      'No se mide con multímetro: requiere osciloscopio o probador. Si el equipo no inicia, prueba con otro.',
+      'Placas con microcontrolador, TV, relojes, UPS, routers.',
+      'Deja de oscilar: el microcontrolador no inicia.'),
+    E('Electromecánicos', 'bat', 'Batería de plomo-ácido sellada (12 V)', ['battery', []], 'bat',
+      '12 V 7 Ah, 9 Ah, 17 Ah · 6 V 4 Ah',
+      'Almacena energía de respaldo en UPS y sistemas de alarma.',
+      'Caja negra o gris con 2 terminales: rojo (+) y negro (−); etiqueta con voltaje y Ah.',
+      'En reposo 12.6–13 V; bajo carga no debe caer de 11 V. Haz prueba de carga si puedes.',
+      'UPS, alarmas, luces de emergencia, juguetes eléctricos.',
+      'Sulfatada o con celdas en corto: no sostiene carga. Reemplaza por la misma capacidad.'),
+    E('Electromecánicos', 'jack', 'Conector jack DC', ['jack', []], 'module',
+      '5.5×2.1 mm, 5.5×2.5 mm, 3.5×1.35 mm',
+      'Entrada de alimentación de cargadores y equipos.',
+      'Cilindro hueco con pin central y 3 patas.',
+      'Continuidad al insertar el plug; si falla al mover el cable, la soldadura está floja.',
+      'Laptops, routers, monitores, equipos de audio.',
+      'Soldadura fría o pin gastado: el equipo se apaga al mover el cable.'),
+
+    E('Módulos', 'buck', 'Módulo reductor (LM2596 / XL4015)', ['module', ['buck', 'LM2596']], 'module',
+      'LM2596 (3 A), XL4015 (5 A), MP1584 (1.8 A) · entrada 4–40 V',
+      'Reduce una tensión continua a otra ajustable con alta eficiencia (convertidor buck).',
+      'Placa pequeña con bobina negra, capacitores, diodo Schottky y un trimmer azul; terminales IN+ IN− OUT+ OUT−.',
+      'Aliméntalo con 12 V, mide la salida y gira el trimmer: debe variar. Si no regula, revisa el diodo y los capacitores.',
+      'Sistemas de baterías, cargadores de coche, taladros, instalaciones de LED.',
+      'Capacitor seco, Schottky en corto o trimmer desgastado.'),
+    E('Módulos', 'boost', 'Módulo elevador (XL6009 / MT3608)', ['module', ['boost', 'XL6009']], 'module',
+      'XL6009 (4 A), MT3608 (2 A) · entrada 3–32 V',
+      'Eleva una tensión continua a otra mayor (convertidor boost).',
+      'Placa parecida al reductor con trimmer y bobina; la salida OUT+ es mayor que IN+.',
+      'Con 5 V de entrada y sin carga debe llegar a la tensión ajustada.',
+      'Cargadores portátiles, linternas, módulos de baterías.',
+      'No eleva: diodo abierto o bobina dañada.'),
+    E('Módulos', 'tp4056', 'Módulo cargador TP4056', ['module', ['tp4056', 'TP4056']], 'module',
+      'TP4056 + DW01 (con protección) · 5 V micro-USB o Tipo C · 1 A',
+      'Carga baterías de litio 18650 / LiPo de 3.7 V con corte automático.',
+      'Placa pequeña con conector micro-USB o Tipo C, dos LED (rojo carga, verde completa) y salidas B+ B− OUT+ OUT−.',
+      'Con la batería conectada el LED rojo debe encender; mide 4.2 V al terminar.',
+      'Powerbanks, linternas recargables, equipos con batería de litio.',
+      'No carga: IC dañado o batería inservible.'),
+    E('Módulos', 'hbridge', 'Módulo puente H (L298N)', ['module', ['h', 'L298N']], 'module',
+      'L298N (2 A por canal), L9110, BTS7960',
+      'Controla el sentido y la velocidad de motores de corriente continua.',
+      'Placa roja con un disipador negro grande, bornes de tornillo y pines IN1–IN4.',
+      'Mide las salidas OUT1/OUT2 al activar IN1/IN2 (con PWM); la caída es ≈ 2 V.',
+      'Juguetes, robots, impresoras.',
+      'Se quema por sobrecorriente; revisa diodos y driver.'),
+    E('Módulos', 'mrele', 'Módulo de relé', ['module', ['relay', 'RELÉ 5V']], 'relay',
+      '1, 2, 4 u 8 canales · 5 V o 12 V · 10 A/250 V',
+      'Placa con relé, transistor, diodo y LED: permite que un microcontrolador maneje cargas.',
+      'Relé azul grande, transistor y LED en una placa; terminales de tornillo COM, NO y NC.',
+      'Con 5 V en VCC y señal en IN: debe oírse el clic y encender el LED.',
+      'Domótica, alarmas, controladores de luces.',
+      'Transistor, diodo o contactos dañados.')
+  ];
+
+  /* =====================================================================
+     FOTOS PROPIAS (se guardan en el teléfono, reducidas)
+     ===================================================================== */
+  var CLAVE_F = 'inventario_comp_fotos_v1';
+  var fotos = {};
+  try { fotos = JSON.parse(localStorage.getItem(CLAVE_F)) || {}; } catch (e) { fotos = {}; }
+  if (typeof fotos !== 'object' || Array.isArray(fotos)) fotos = {};
+  function guardarFotos() {
+    try { localStorage.setItem(CLAVE_F, JSON.stringify(fotos)); return true; }
+    catch (e) { aviso('Almacenamiento lleno: borra alguna foto o exporta un respaldo'); return false; }
+  }
+  function reducir(file) {
+    return new Promise(function (resolve, reject) {
+      var lector = new FileReader();
+      lector.onerror = function () { reject(new Error('lectura')); };
+      lector.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error('imagen')); };
+        img.onload = function () {
+          var esc = Math.min(1, 520 / Math.max(img.width, img.height));
+          var c = document.createElement('canvas');
+          c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
+          var cx = c.getContext('2d');
+          cx.fillStyle = '#fff'; cx.fillRect(0, 0, c.width, c.height);
+          cx.drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL('image/jpeg', 0.65));
+        };
+        img.src = lector.result;
+      };
+      lector.readAsDataURL(file);
+    });
+  }
+
+  /* =====================================================================
+     INTERFAZ
+     ===================================================================== */
+  var lista = $('listaCat'), buscar = $('buscarCat'), cuenta = $('cuentaCat');
+  var catActiva = '';
+
+  var chips = $('chipsCat');
+  function pintarChips() {
+    chips.textContent = '';
+    ['Todas'].concat(CATS).forEach(function (c) {
+      var activo = (c === 'Todas' && !catActiva) || c === catActiva;
+      var b = el('button', 'chip' + (activo ? ' on' : ''), c);
+      b.type = 'button';
+      b.addEventListener('click', function () {
+        catActiva = (c === 'Todas') ? '' : c;
+        pintarChips();
+        render();
+      });
+      chips.appendChild(b);
+    });
+  }
+
+  function campo(cuerpo, titulo, texto) {
+    var d = el('div', 'campo');
+    d.appendChild(el('strong', '', titulo));
+    d.appendChild(el('p', '', texto));
+    cuerpo.appendChild(d);
+  }
+
+  function construirCuerpo(it, cuerpo) {
+    var top = el('div', 'cat-top');
+    var g = el('div', 'cat-grande');
+    g.insertAdjacentHTML('beforeend', ilu(it.dib));
+    top.appendChild(g);
+    var s = el('div', 'cat-sim');
+    s.insertAdjacentHTML('beforeend', sym(it.sim));
+    s.appendChild(el('span', '', 'Símbolo'));
+    top.appendChild(s);
+    cuerpo.appendChild(top);
+
+    campo(cuerpo, 'Qué hace', it.que);
+    campo(cuerpo, 'Cómo identificarlo', it.ident);
+    campo(cuerpo, 'Valores y códigos típicos', it.ej);
+    campo(cuerpo, 'Cómo probarlo', it.prueba);
+    campo(cuerpo, 'Dónde rescatarlo', it.rescate);
+    campo(cuerpo, 'Fallas comunes', it.falla);
+
+    var zf = el('div', 'mifoto');
+    function pintarFoto() {
+      zf.textContent = '';
+      zf.appendChild(el('strong', '', 'Mi foto'));
+      if (fotos[it.id]) {
+        var im = el('img'); im.src = fotos[it.id]; im.alt = 'Mi foto de ' + it.n; zf.appendChild(im);
+      } else {
+        zf.appendChild(el('p', 'sub', 'Las ilustraciones son esquemáticas. Agrega una foto real de este componente tomada por ti.'));
+      }
+      var fila = el('div', 'btn-row');
+      var inp = el('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true;
+      var b1 = el('button', 'btn btn-sec', fotos[it.id] ? '📷 Cambiar foto' : '📷 Agregar mi foto'); b1.type = 'button';
+      b1.addEventListener('click', function () { inp.click(); });
+      inp.addEventListener('change', function () {
+        var f = inp.files && inp.files[0];
+        if (!f) return;
+        reducir(f).then(function (b64) {
+          var antes = fotos[it.id];
+          fotos[it.id] = b64;
+          if (guardarFotos()) { pintarFoto(); aviso('Foto guardada ✔'); }
+          else { if (antes) fotos[it.id] = antes; else delete fotos[it.id]; }
+        }).catch(function () { aviso('No se pudo leer la imagen'); });
+      });
+      fila.appendChild(b1);
+      if (fotos[it.id]) {
+        var b2 = el('button', 'btn btn-danger', 'Quitar foto'); b2.type = 'button';
+        b2.addEventListener('click', function () { delete fotos[it.id]; guardarFotos(); pintarFoto(); });
+        fila.appendChild(b2);
+      }
+      zf.appendChild(inp);
+      zf.appendChild(fila);
+    }
+    pintarFoto();
+    cuerpo.appendChild(zf);
+  }
+
+  function render() {
+    var q = norm(buscar.value);
+    var palabras = q ? q.split(' ') : [];
+    var res = CAT.filter(function (it) {
+      if (catActiva && it.cat !== catActiva) return false;
+      return palabras.every(function (p) { return it.q.indexOf(p) !== -1; });
+    });
+    lista.textContent = '';
+    cuenta.textContent = 'Mostrando ' + res.length + ' de ' + CAT.length + ' componentes';
+    if (!res.length) {
+      lista.appendChild(el('div', 'empty', 'Ningún componente coincide. Prueba con otra palabra (por ejemplo: “fuente”, “UPS”, “IRF”, “104”, “diodo”).'));
+      return;
+    }
+    res.forEach(function (it) {
+      var d = el('details', 'cat-item');
+      var sm = el('summary');
+      var th = el('div', 'cat-thumb');
+      th.insertAdjacentHTML('beforeend', ilu(it.dib));
+      sm.appendChild(th);
+      var tt = el('div', 'cat-tit');
+      tt.appendChild(el('strong', '', it.n));
+      tt.appendChild(el('span', 'pill', it.cat));
+      tt.appendChild(el('div', 'sub', it.ej));
+      sm.appendChild(tt);
+      d.appendChild(sm);
+      var cuerpo = el('div', 'cat-cuerpo');
+      d.appendChild(cuerpo);
+      var armado = false;
+      d.addEventListener('toggle', function () {
+        if (d.open && !armado) { armado = true; construirCuerpo(it, cuerpo); }
+      });
+      lista.appendChild(d);
+    });
+  }
+  buscar.addEventListener('input', render);
+
+  pintarChips();
+  render();
+})();
+
 </script>
 </body>
 </html>
