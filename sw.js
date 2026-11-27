@@ -2,7 +2,7 @@
 // - Con internet: carga la versión más reciente y la guarda en caché (la app se actualiza sola).
 // - Sin internet (o conexión muy lenta): usa la copia guardada.
 // Si cambias algún archivo, sube el número de VERSION para limpiar cachés viejas.
-const VERSION = 'inventario-taller-v5';
+const VERSION = 'inventario-taller-v6';
 const NUCLEO = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 const ESPERA_RED_MS = 4000; // si la red tarda más, se usa la caché
 

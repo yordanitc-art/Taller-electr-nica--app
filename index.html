@@ -586,6 +586,28 @@
       <div id="resDeduc"></div>
     </div>
   </section>
+  <section class="panel" id="panelModo" hidden>
+    <h2>➕ Crear circuito</h2>
+    <p class="ayuda">¿Cómo quieres crearlo?</p>
+    <button class="btn btn-sec" id="btnModoManual" type="button">✍️ Manual: escribo componente por componente</button>
+    <button class="btn btn-primary" id="btnModoLogica" type="button" style="margin-top:10px">🧠 Por lógica: digo qué componentes veo y la app deduce el circuito</button>
+    <button class="btn btn-sec" id="btnModoGen" type="button" style="margin-top:10px">⚡ Generar por voltaje o carga de baterías</button>
+    <button class="btn btn-sec" id="btnModoCerrar" type="button" style="margin-top:10px">Cancelar</button>
+  </section>
+  <section class="panel" id="panelLogica" hidden>
+    <h2>🧠 Deducir el circuito por lo que veo</h2>
+    <p class="ayuda">Anota todos o casi todos los componentes que ves en la placa (toca los botones o escríbelos separados por comas, con códigos si los lees: "TL431", "PC817", "UC3842", "BTA16"). La app compara con todos los circuitos que conoce, dice cuál es más probable y qué componentes faltarían.</p>
+    <div class="chips" id="lgChips"></div>
+    <div class="field">
+      <label for="lgTexto">Componentes que veo</label>
+      <textarea id="lgTexto" placeholder="Ej. fusible, varistor, puente rectificador, capacitor de 400 V, optoacoplador, TL431, transformador de ferrita, MOSFET"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="lgDeducir" type="button">🧠 Deducir</button>
+      <button class="btn btn-sec" id="lgCerrar" type="button">Cerrar</button>
+    </div>
+  </section>
+  <div id="lgRes"></div>
   <section class="panel" id="panelGen" hidden>
     <h2>⚡ Generador de circuitos</h2>
     <p class="ayuda">Dime qué necesitas y la app calcula 3 versiones (fácil, media y avanzada) con los valores de cada componente. Luego las guardas como circuito propio ★ para analizarlas.</p>
@@ -1457,6 +1479,277 @@
   };
   CORTO.atx = 'Fuente ATX'; CORTO.tv = 'TV LED / LCD';
 
+  /* =====================================================================
+     MÁS CIRCUITOS (protectores, inversores, cargadores, control, etc.)
+     "s" = qué revisar primero según el síntoma (id de síntoma: componentes)
+     ===================================================================== */
+  function X(id, n, r, v, f, p, e, d, c, a) { return K(id, n, r, v, f, p, e, d, a || [], c); }
+  function parseS(t) {
+    var o = {};
+    String(t || '').split(';').forEach(function (par) {
+      var x = par.split(':');
+      if (x.length === 2) o[x[0].trim()] = x[1].split(',').map(function (y) { return y.trim(); }).filter(Boolean);
+    });
+    return o;
+  }
+  function addCirc(id, n, desc, comps, s) { CIRC[id] = { n: n, desc: desc, comps: comps, s: parseS(s) }; CORTO[id] = n; }
+
+  addCirc('protant', 'Protector de voltaje antiguo (relé + zener / comparador)',
+    'Supresores y guardas para refrigerador y TV de los años 90–2000. Flujo: fusible → varistor → transformador pequeño → rectificador y filtro → sensado con zener o potenciómetros → comparador o transistores → temporizador de reconexión (1–3 min) → relé de salida. Si el voltaje sale de rango, el relé suelta; al volver, espera el retardo y reconecta. ⚠ La toma lleva 110/220 V.',
+    [
+      X('fusible', 'Fusible de entrada', 'Protege el protector y el cableado.', '10–15 A (según el relé)', 'Abierto: la toma queda sin energía.', 'Continuidad.', 'Sin él no pasa corriente.', 'En serie con la entrada de red.', 1, ['varistor']),
+      X('varistor', 'Varistor MOV', 'Absorbe los picos de voltaje.', '14D471K / 20D471K (≈ 275 V AC)', 'Quemado o agrietado por un pico; puede llevarse el fusible.', 'Visual y resistencia muy alta.', 'Sin él pierdes la protección contra picos.', 'Disco azul en paralelo con la entrada.', 1),
+      X('trafo', 'Transformador pequeño (sensado y fuente)', 'Baja la red a 9–12 V AC para alimentar la lógica y medir el voltaje.', '110/220 V → 9–12 V, 1–3 VA', 'Primario abierto: sin alimentación de la lógica.', 'Resistencia del primario (cientos de Ω) y AC del secundario.', 'Sin él el circuito no arranca.', 'Pequeño transformador azul o negro.', 1, ['puente']),
+      X('puente', 'Rectificador y capacitor de filtro', 'Convierte la AC del secundario en DC para la lógica.', '1N4007 ×4 o puente pequeño; 220–1000 µF', 'Diodo abierto o capacitor seco: relé que vibra o no engancha.', 'Modo diodo y ESR del capacitor.', 'Sin DC estable el relé no engancha.', 'Tras el secundario del transformador.', 1, ['filtro']),
+      X('filtro', 'Capacitor de filtro', 'Estabiliza la DC que alimenta la lógica.', '470–2200 µF, 16–25 V', 'Seco: relé que vibra o tarda en engancharse.', 'ESR y capacitancia.', 'El relé hace clic repetido.', 'El electrolítico más grande de la placa.', 1),
+      X('sensado', 'Sensado de voltaje (zener + potenciómetros)', 'Define los límites de voltaje alto y bajo.', 'Zener 5–12 V, 2 trimmers (alto y bajo)', 'Trimmers sucios o desajustados: corta con voltaje normal o no corta nunca.', 'Mide la tensión en el divisor al variar la entrada (con un variac) y compara con la tabla.', 'Los límites quedan descontrolados.', 'Trimmers pequeños azules y diodos zener cerca del comparador.', 1),
+      X('comp', 'Comparador o transistores de disparo (LM339 / LM393 / BJT)', 'Decide cuándo soltar o conectar el relé.', 'LM339, LM393 o transistores BC547', 'Quemado o sin alimentación: el relé no conecta nunca o no corta.', 'Verifica Vcc y que la salida cambie al variar el voltaje de sensado.', 'Sin él no hay decisión: sin salida o sin protección.', 'Chip de 8 o 14 patas cerca de los trimmers.', 1),
+      X('retardo', 'Temporizador de reconexión (555 o red RC)', 'Espera 1–3 minutos antes de volver a conectar (protege compresores).', '555 + 100 µF + resistencia de 100 kΩ–1 MΩ', 'Capacitor seco: reconecta muy rápido (peligroso) o nunca.', 'Mide el tiempo de reconexión con un cronómetro.', 'Sin retardo el compresor puede dañarse.', 'Chip 555 o capacitor de 100–470 µF cerca del relé.', 0),
+      X('rele', 'Relé de salida', 'Conecta o corta la toma.', '10–30 A, bobina de 12 V', 'Contactos quemados o pegados; bobina abierta.', 'Continuidad de contactos al activar y bobina de 200–400 Ω.', 'Sin relé no hay salida.', 'El componente cúbico más grande, azul o negro.', 1, ['varistor']),
+      X('led', 'LED de estado', 'Indica salida conectada o en espera.', 'LED + resistencia 1–2 kΩ', 'Abierto: no se ve el estado aunque funcione.', 'Mide el voltaje de salida antes de culpar al LED.', 'Solo pierdes el indicador.', 'Frente de la caja.', 0)
+    ],
+    'noenc:fusible,trafo,puente,filtro;nocorr:rele,fusible,comp,retardo,sensado;apaga:sensado,comp,filtro,retardo;clic:rele,filtro,retardo;quemado:varistor,rele,fusible;corto:varistor,puente,rele;chispas:rele,varistor;vbajo:sensado,filtro;valto:sensado,comp;fusible:varistor,puente,trafo;intermit:rele,filtro,retardo,sensado;sinind:led,trafo,puente;relenoact:rele,comp,filtro,puente;reinicia:retardo,filtro,sensado');
+
+  addCirc('protmod', 'Protector de voltaje moderno (microcontrolador + relé + display)',
+    'Protectores digitales con display o LED: un microcontrolador mide el voltaje, y un relé corta la salida si sale de rango, con retardo de reconexión programable. Flujo: fusible → varistor (y a veces un segundo MOV) → mini fuente → medición de voltaje → microcontrolador → transistor driver → relé; display y botones de ajuste.',
+    [
+      X('fusible', 'Fusible de entrada', 'Protege el equipo.', '10–16 A', 'Abierto: sin energía.', 'Continuidad.', 'Sin energía de entrada.', 'En serie con la línea de entrada.', 1, ['varistor']),
+      X('varistor', 'Varistor MOV (uno o dos)', 'Absorbe picos de voltaje.', '14D471K / 20D471K', 'Quemado por picos; fusible abierto.', 'Visual y resistencia muy alta.', 'Pierdes protección.', 'Discos azules en paralelo con la entrada.', 1),
+      X('fuente5', 'Mini fuente (capacitivo o conmutada, 5 V)', 'Genera los 5 V de la lógica.', 'Capacitor X2 + zener + resistencia, o IC conmutado pequeño', 'Capacitor reductor seco: sin 5 V; resistencia fusible abierta.', 'Mide 5 V en el microcontrolador.', 'Sin 5 V la lógica no arranca.', 'Cerca de la entrada, con capacitor X2 o transformador pequeño.', 1),
+      X('sensado', 'Circuito de medición de voltaje', 'Convierte el voltaje de red en una señal para el microcontrolador.', 'Divisor de resistencias + diodo o transformador pequeño', 'Resistencia del divisor cambiada: lectura errónea.', 'Compara la lectura con un multímetro.', 'Mide mal el voltaje: corta sin motivo o no corta.', 'Resistencias de 100 kΩ–1 MΩ hacia el microcontrolador.', 1),
+      X('mcu', 'Microcontrolador / IC de control', 'Lee el voltaje, maneja el display y decide.', 'Chip DIP-8/SOP-8/16 (ej. STC, PIC, HT, TM)', 'Sin Vcc o dañado: sin display o relé siempre apagado.', 'Mide Vcc y el reloj; compara con una placa buena.', 'Sin MCU no hay control.', 'Chip con muchas patas cerca del display.', 1),
+      X('display', 'Display o LED', 'Muestra voltaje y estado.', 'Display de 3 dígitos / LED', 'Segmentos apagados o display sin luz.', 'Verifica Vcc y las resistencias del display.', 'Solo pierdes la lectura.', 'Frente de la caja.', 0),
+      X('driver', 'Transistor driver del relé', 'Activa la bobina del relé desde el MCU.', 'BC547 / S8050 + diodo 1N4148', 'En corto o abierto: el relé no engancha o queda pegado.', 'Modo diodo; compara con una placa buena.', 'El relé no actúa.', 'Junto al relé.', 1),
+      X('rele', 'Relé de salida', 'Conecta o corta la toma.', '10–30 A, bobina 5 o 12 V', 'Contactos quemados o pegados.', 'Continuidad al activar; bobina de decenas a cientos de Ω.', 'Sin él no hay salida.', 'Componente cúbico grande.', 1),
+      X('botones', 'Botones de ajuste y reset', 'Permiten programar voltajes y retardo.', 'Pulsadores táctiles', 'Botón sucio o pegado: ajustes erráticos.', 'Continuidad al pulsar.', 'No puedes ajustar los límites.', 'Frente de la caja.', 0)
+    ],
+    'noenc:fusible,fuente5,mcu;nocorr:rele,driver,mcu,fuente5;apaga:sensado,mcu,fuente5;clic:rele,driver,fuente5;quemado:varistor,fuente5,rele;corto:varistor,fuente5;chispas:rele,varistor;intermit:fuente5,rele,mcu;reinicia:fuente5,mcu;relenoact:rele,driver,mcu;sinind:display,mcu,fuente5;vbajo:sensado,mcu;valto:sensado,mcu');
+
+  addCirc('avr', 'Regulador automático de voltaje (AVR con relés)',
+    'Estabilizadores domésticos con autotransformador de tomas. Flujo: breaker → varistor → autotransformador → relés que eligen la toma → salida; control con sensado + microcontrolador o comparadores + fuente auxiliar + display. ⚠ Alta potencia: calienta y tiene corrientes grandes.',
+    [
+      X('fusible', 'Breaker / fusible de entrada', 'Protege contra sobrecarga.', 'Según potencia (ej. 10–30 A)', 'Disparado o abierto: sin salida.', 'Continuidad.', 'Sin energía.', 'En la entrada.', 1),
+      X('varistor', 'Varistor MOV', 'Absorbe picos.', '20D471K o mayor', 'Quemado.', 'Visual.', 'Sin protección.', 'En paralelo con la entrada.', 0),
+      X('autotrafo', 'Autotransformador con tomas', 'Sube o baja el voltaje según la toma elegida.', 'Núcleo toroidal o de láminas, 500–5000 VA', 'Espiras en corto, quemado o toma abierta: calienta o sin salida en un rango.', 'Mide continuidad entre tomas y resistencia; olor a barniz quemado.', 'Sin él no hay regulación.', 'El componente más grande y pesado.', 1),
+      X('reles', 'Relés de tomas', 'Seleccionan cuál toma conecta a la salida.', '4–6 relés de 20–30 A', 'Contactos pegados o quemados: no cambia de toma o da mal voltaje.', 'Continuidad al activar cada uno; bobina intacta.', 'El voltaje de salida no se regula.', 'Fila de relés grandes.', 1),
+      X('fuente5', 'Fuente auxiliar (transformador pequeño + regulador)', 'Alimenta el control y los relés.', '12 V / 5 V', 'Sin 12 V o 5 V: los relés no actúan.', 'Mide 12 V y 5 V.', 'El control no arranca.', 'Cerca del control.', 1),
+      X('sensado', 'Circuito de sensado', 'Mide el voltaje de entrada y salida.', 'Divisores resistivos + diodos / transformador', 'Lectura errónea: cambia de toma sin razón.', 'Compara la lectura con el multímetro.', 'Regula mal.', 'Cerca del microcontrolador.', 1),
+      X('mcu', 'Microcontrolador / comparadores', 'Decide qué toma y cuándo reconectar.', 'MCU o LM339', 'Sin Vcc o dañado: sin control.', 'Vcc y señales a los relés.', 'Sin MCU no hay regulación.', 'Chip central de la placa de control.', 1),
+      X('retardo', 'Retardo de reconexión', 'Evita arranques bruscos del equipo conectado.', 'Parte del MCU o red RC', 'Se omite o es muy corto.', 'Cronómetro.', 'Sin él se daña el equipo conectado.', 'Parte del control.', 0),
+      X('display', 'Voltímetro / display', 'Muestra el voltaje.', 'Display de 3 dígitos', 'Sin lectura.', 'Verifica Vcc.', 'Solo pierdes la lectura.', 'Frente de la caja.', 0)
+    ],
+    'noenc:fusible,fuente5,mcu;nocorr:fusible,reles,autotrafo;apaga:sensado,mcu,fuente5;clic:reles,fuente5,mcu;calienta:autotrafo,reles;zumbido:autotrafo,reles;quemado:autotrafo,reles,varistor;vbajo:autotrafo,reles,sensado;valto:reles,sensado,mcu;relenoact:reles,mcu,fuente5;sinind:display,fuente5');
+
+  addCirc('inv', 'Inversor DC-AC (12 V → 110/220 V)',
+    'Inversores de auto o de baterías. Flujo: fusible grande + cables → capacitores de entrada → oscilador/IC PWM (SG3525, TL494, CD4047) → drivers → MOSFET de potencia (push-pull o puente) → transformador (ferrita o hierro) → filtro → salida AC; con protección de bajo voltaje y sobrecarga. ⚠ La salida es peligrosa.',
+    [
+      X('fusible', 'Fusible de batería (30–60 A)', 'Protege contra corto en la batería.', '30–60 A según la potencia', 'Abierto: sin energía.', 'Continuidad.', 'Sin alimentación.', 'En el cable positivo de entrada.', 1, ['mosfet']),
+      X('entrada', 'Capacitores de entrada', 'Filtran la entrada de la batería.', '1000–4700 µF, 16–25 V', 'Secos: el inversor se reinicia o calienta.', 'ESR y capacitancia.', 'Entrada ruidosa.', 'Junto a los terminales de batería.', 0),
+      X('osc', 'Oscilador / IC PWM (SG3525 / TL494 / CD4047)', 'Genera los pulsos a 50/60 Hz o alta frecuencia.', 'SG3525, TL494, CD4047', 'Sin Vcc o dañado: no oscila.', 'Vcc (≈ 12 V) y pulsos con osciloscopio.', 'Sin pulsos no hay salida.', 'Chip de 8 o 16 patas.', 1, ['driver']),
+      X('driver', 'Drivers de compuerta', 'Dan corriente a los MOSFET.', 'Resistencias + transistores o IC (IR2110, TC4420)', 'Resistencia abierta o transistor dañado: los MOSFET no conmutan bien.', 'Mide la tensión de compuerta.', 'Los MOSFET se calientan o no conmutan.', 'Entre el oscilador y los MOSFET.', 1),
+      X('mosfet', 'MOSFET de potencia', 'Conmutan la corriente del transformador.', 'IRF3205, IRFZ44, IRF1405 (varios en paralelo)', 'En corto: quema el fusible y las resistencias.', 'Modo diodo S-D; G sin continuidad con D ni S.', 'Sin ellos no pasa energía.', 'Fila de MOSFET con disipador.', 1, ['fusible']),
+      X('trafo', 'Transformador de potencia', 'Sube la tensión a 110/220 V.', 'Ferrita (modelos modernos) o hierro (clásicos)', 'Espiras en corto: calienta, quema MOSFET.', 'Mide continuidad y compara; ruido anormal.', 'Sin él no hay AC.', 'El transformador más grande.', 1),
+      X('salida', 'Salida, filtro y tomas', 'Entrega la AC al equipo.', 'Capacitor de salida 1–2 µF X2 + tomas', 'Capacitor en corto; toma floja.', 'Voltaje AC de salida.', 'Sin salida o con ruido.', 'Parte trasera de la caja.', 1),
+      X('proteccion', 'Protección de bajo voltaje y sobrecarga', 'Apaga el inversor ante baja batería, corto o calor.', 'Comparador (LM393/LM339) + sensor de temperatura', 'Falla: se apaga solo o no protege.', 'Verifica los umbrales con una fuente variable.', 'Se apaga con carga o sin motivo.', 'Cerca del control.', 0)
+    ],
+    'noenc:fusible,entrada,osc;nocorr:mosfet,trafo,osc,driver,salida;fusible:mosfet,entrada,driver;calienta:mosfet,trafo,driver;apaga:proteccion,entrada,mosfet,osc;zumbido:trafo,mosfet,driver;quemado:mosfet,trafo,driver;corto:mosfet,entrada;vbajo:mosfet,trafo,entrada;intermit:entrada,osc,mosfet;chispas:mosfet,fusible');
+
+  addCirc('cargpb', 'Cargador de batería de plomo (12 V / auto)',
+    'Cargadores de baterías de auto o de UPS. Flujo: fusible → transformador de potencia → puente rectificador (alta corriente) → regulación de corriente (resistencias, SCR/triac o IC) → pinzas; con amperímetro y corte automático en versiones modernas.',
+    [
+      X('fusible', 'Fusible de entrada', 'Protege el transformador.', '2–5 A', 'Abierto: sin salida.', 'Continuidad.', 'Sin energía.', 'Cerca del cable de entrada.', 1, ['trafo', 'puente']),
+      X('trafo', 'Transformador de potencia', 'Baja la red a 14–18 V AC.', '14–18 V, 5–15 A', 'Primario abierto o espiras en corto: sin salida o calienta.', 'Resistencia del primario y AC del secundario.', 'Sin transformador no hay carga.', 'El componente más pesado.', 1, ['puente']),
+      X('puente', 'Puente rectificador de alta corriente', 'Rectifica a DC.', '25–35 A (KBPC, PB)', 'Diodo en corto: quema el fusible; abierto: poca corriente.', 'Modo diodo; revisa que no tenga cortos.', 'Sin él no hay DC.', 'Bloque metálico con disipador.', 1),
+      X('regulacion', 'Regulación de corriente', 'Limita la carga y reduce la corriente al llenar.', 'Selector con resistencias de potencia, SCR/triac o IC', 'Resistencias abiertas o SCR dañado: carga mínima o sin límite.', 'Con la batería conectada mide la corriente en cada posición.', 'Carga errática o excesiva.', 'Cables gruesos y resistencias de cemento.', 1),
+      X('amper', 'Amperímetro o indicador de carga', 'Muestra la corriente.', 'Aguja o display', 'Descompuesto: sin lectura.', 'Compara con multímetro.', 'Solo pierdes la lectura.', 'Frente del cargador.', 0),
+      X('corte', 'Corte automático (relé o comparador)', 'Desconecta al llegar a ≈ 14,4 V.', 'Comparador + relé', 'No corta: sobrecarga y gases en la batería.', 'Con una batería llena el relé debe soltar.', 'Riesgo de sobrecarga.', 'En cargadores modernos de varias etapas.', 0),
+      X('pinzas', 'Cables y pinzas', 'Conducen la corriente a la batería.', '2 pinzas rojo/negro, cable de 2,5–4 mm²', 'Cables rotos o sulfatados: carga cero.', 'Continuidad de punta a punta.', 'La batería no recibe corriente.', 'Salida del cargador.', 1)
+    ],
+    'noenc:fusible,trafo;nocorr:puente,trafo,pinzas,fusible;nocarga:regulacion,puente,pinzas,corte;calienta:trafo,puente,regulacion;fusible:puente,trafo;quemado:trafo,puente,regulacion;zumbido:trafo,puente;vbajo:trafo,puente,regulacion;valto:regulacion,corte;bateriaagota:corte,regulacion');
+
+  addCirc('dimmer', 'Dimmer / control de fase con TRIAC',
+    'Atenuadores de luz y reguladores de velocidad de ventiladores o motores universales. Flujo: potenciómetro + red RC → DIAC → TRIAC → filtro antiparasitario. Al girar el potenciómetro cambia el ángulo de disparo del TRIAC.',
+    [
+      X('fusible', 'Fusible o protección', 'Protege el circuito.', '2–10 A', 'Abierto: sin energía.', 'Continuidad.', 'Sin salida.', 'En serie con la carga.', 0, ['triac']),
+      X('pot', 'Potenciómetro de control', 'Ajusta el ángulo de disparo.', '250–500 kΩ lineal', 'Pista gastada: salta, parpadea o no regula.', 'Resistencia al girar sin saltos.', 'No se puede regular la potencia.', 'En el frente del dimmer.', 1),
+      X('rc', 'Red RC (resistencia + capacitor)', 'Retrasa el disparo.', '100 nF 250 V + resistencias de 10–100 kΩ', 'Capacitor seco: regulación errática o fija.', 'Capacímetro.', 'El control se descompone.', 'Junto al potenciómetro.', 1),
+      X('diac', 'DIAC', 'Dispara el TRIAC a un nivel de voltaje fijo.', 'DB3 (≈ 32 V)', 'Abierto o en corto: no hay disparo.', 'Con un transformador de 36+ V o en serie con la red (con cuidado); a veces se sustituye y se prueba.', 'El TRIAC no conduce.', 'Pequeño diodo de vidrio junto al TRIAC.', 1),
+      X('triac', 'TRIAC de potencia', 'Controla la corriente de la carga.', 'BT136 (4 A), BTA16 (16 A), BT138', 'En corto: la carga queda siempre a pleno; abierto: sin salida.', 'Entre MT1 y MT2 debe haber OL; cortocircuito indica daño.', 'Sin él no hay control.', 'Componente de 3 patas con disipador.', 1),
+      X('filtro', 'Bobina y capacitor antiparasitario', 'Reduce el ruido y el zumbido.', 'Bobina 100 µH + capacitor 47–100 nF X2', 'Capacitor en corto: se quema el fusible.', 'Capacitor sin corto; continuidad en la bobina.', 'Zumbido y ruido en radios.', 'En serie con la salida.', 0),
+      X('disipador', 'Disipador', 'Evita sobrecalentamiento del TRIAC.', 'Aleta de aluminio', 'Se quita o se afloja: sobrecalentamiento.', 'Debe estar tibio, no quemar.', 'El TRIAC se quema por calor.', 'Atornillado al TRIAC.', 0)
+    ],
+    'noenc:fusible,triac,diac;nocorr:triac,fusible,diac;calienta:triac,disipador,filtro;zumbido:filtro,triac,rc;apaga:triac,rc,pot;fusible:triac,filtro;quemado:triac,filtro;corto:triac,filtro;intermit:pot,rc,diac;vbajo:pot,rc,triac;valto:triac,pot');
+
+  addCirc('ledriver', 'Bombillo LED / driver de LED',
+    'Lámparas LED de 5–15 W. Flujo: resistencia fusible → puente → capacitor de filtro de alta tensión → IC driver (lineal o conmutado) o capacitor reductor → placa de LED en serie. Si falla un LED, toda la cadena se apaga.',
+    [
+      X('fusible', 'Resistencia fusible', 'Limita el pico de arranque y actúa como fusible.', '10–47 Ω, 1–2 W', 'Abierta: la lámpara no enciende.', 'Continuidad / pocos Ω.', 'Sin energía al resto.', 'Cerca de los cables de entrada.', 1, ['puente']),
+      X('capdrop', 'Capacitor reductor (X2) + resistencia de descarga', 'En drivers simples reduce la tensión.', '0,22–1 µF, 250–400 V X2', 'Capacitor seco o en corto: sin luz o parpadeo.', 'Capacímetro.', 'La corriente de los LED no es la correcta.', 'Cerca de la entrada; si no tiene transformador.', 0),
+      X('puente', 'Puente rectificador', 'Convierte a DC.', '4 × 1N4007 o MB6S', 'Diodo en corto: quema la resistencia fusible.', 'Modo diodo.', 'Sin DC no enciende.', 'Pequeño bloque tras la resistencia fusible.', 1),
+      X('cfiltro', 'Capacitor de filtro (400 V)', 'Reduce el parpadeo.', '4,7–47 µF, 400 V', 'Seco: parpadeo muy marcado o enciende y apaga.', 'ESR y capacitancia.', 'Luz parpadeante.', 'Electrolítico de 400 V.', 1),
+      X('icled', 'IC driver de LED (lineal o conmutado)', 'Regula la corriente de los LED.', 'BP3105, SM2082, HV9910 u otro', 'Quemado: sin luz o con parpadeo.', 'Voltaje de alimentación y salida a LED.', 'Sin driver los LED no reciben corriente.', 'Chip pequeño en la placa del driver.', 1),
+      X('ind', 'Inductor (drivers conmutados)', 'Almacena energía.', '1–3 mH', 'Abierto: sin luz.', 'Continuidad en el inductor.', 'El driver no entrega corriente.', 'Cerca del IC.', 0),
+      X('leds', 'Placa de LED en serie', 'Emite la luz.', '20–60 LED SMD 2835 en serie', 'Un LED abierto apaga toda la cadena.', 'Prueba cada LED con una fuente de corriente limitada o puenteando uno a uno.', 'Sin luz o con apagados parciales.', 'La placa de aluminio redonda.', 1)
+    ],
+    'noenc:fusible,puente,icled,leds;nocorr:fusible,puente,icled;calienta:icled,leds,cfiltro;intermit:cfiltro,leds,icled;quemado:fusible,puente,icled;fusible:puente,cfiltro,capdrop;apaga:cfiltro,leds,icled;noimagen:leds,icled');
+
+  addCirc('mdc', 'Controlador de motor DC (PWM / puente H)',
+    'Controladores de velocidad de motores de corriente continua (ventiladores, taladros, bombas, juguetes). Flujo: fuente o batería → fusible → regulador de lógica → control PWM (555 o microcontrolador) → driver → MOSFET o puente H → motor, con diodo de rueda libre.',
+    [
+      X('fusible', 'Fusible de entrada', 'Protege contra cortos.', 'Según el motor (2–20 A)', 'Abierto: sin energía.', 'Continuidad.', 'El controlador no recibe energía.', 'En el positivo de entrada.', 1, ['mosfet']),
+      X('reg', 'Regulador de lógica (7805 / 78L05)', 'Alimenta el control.', '5 V, 100 mA–1 A', 'Sin salida: el control no arranca.', 'Entrada ≥ 7 V y salida de 5 V.', 'No arranca el control.', 'Cerca del control.', 1),
+      X('ctrl', 'Control PWM (555 o microcontrolador)', 'Genera el PWM que fija la velocidad.', 'NE555, ATtiny, PIC o similar', 'Sin Vcc o dañado: motor parado o a pleno.', 'Vcc y señal PWM con osciloscopio o multímetro.', 'Sin control de velocidad.', 'Chip central.', 1),
+      X('pot', 'Potenciómetro de velocidad', 'Fija el ciclo de trabajo.', '10–100 kΩ lineal', 'Gastado: salta o no regula.', 'Resistencia al girar.', 'No se regula la velocidad.', 'Perilla del panel.', 0),
+      X('driver', 'Driver de compuerta', 'Excita los MOSFET.', 'Resistencias + transistores o IC (IR2104)', 'Falla: MOSFET calienta o no conmuta.', 'Mide la compuerta.', 'Pérdida de potencia.', 'Entre el control y los MOSFET.', 1),
+      X('mosfet', 'MOSFET o puente H', 'Conmuta la corriente al motor.', 'IRF540, IRF3205, IRLZ44, L298N', 'En corto: motor siempre a pleno y fusible abierto.', 'Modo diodo; G sin continuidad con D ni S.', 'Motor sin control.', 'Transistores con disipador.', 1, ['fusible']),
+      X('diodo', 'Diodo de rueda libre', 'Absorbe los picos del motor.', '1N5819, 1N5408, UF4007', 'En corto: no sube la velocidad o quema el MOSFET; abierto: picos dañan MOSFET.', 'Modo diodo.', 'Daña los MOSFET con el tiempo.', 'En paralelo con el motor.', 1)
+    ],
+    'noenc:fusible,reg,ctrl;nocorr:mosfet,fusible,driver;motor:mosfet,driver,ctrl,diodo;calienta:mosfet,driver,diodo;apaga:reg,ctrl,fusible;fusible:mosfet,diodo;quemado:mosfet,driver,diodo;intermit:pot,ctrl,reg;vbajo:mosfet,driver,fusible;valto:mosfet,driver,pot;zumbido:mosfet,driver,diodo;corto:mosfet,diodo');
+
+  addCirc('lavctrl', 'Placa de control de lavadora',
+    'Placas de electrodomésticos con ciclos. Flujo: protecciones → fuente de la placa → microcontrolador (con EEPROM) → optotriacs / relés → triacs (motor, bomba, válvulas) y sensores (presostato, NTC, tacómetro). Falla típica: capacitores de la fuente secos, relés pegados, triacs en corto.',
+    [
+      X('fusible', 'Fusible o resistencia fusible de entrada', 'Protege la placa.', '3–5 A / 10 Ω', 'Abierto: placa sin energía.', 'Continuidad.', 'Placa muerta.', 'Entrada de energía.', 1),
+      X('varistor', 'Varistor', 'Absorbe picos.', '10D471K', 'Quemado o agrietado.', 'Visual.', 'Sin protección.', 'Junto al fusible.', 0),
+      X('fuente', 'Fuente de la placa (capacitiva o con transformador)', 'Genera 5 V y 12 V.', 'Transformador o capacitor reductor + reguladores', 'Capacitores secos: reinicios o placa muerta.', 'Mide 5 V y 12 V.', 'Sin alimentación de la lógica.', 'Zona de la entrada.', 1, ['filtro']),
+      X('mcu', 'Microcontrolador', 'Controla los ciclos.', 'MCU SOIC/DIP 28–44 patas', 'Sin Vcc o dañado: la placa no responde.', 'Vcc y reloj.', 'Sin control.', 'El chip más grande de la lógica.', 1, ['eeprom']),
+      X('eeprom', 'Memoria EEPROM', 'Guarda los ajustes y programas.', '24C02 / 24C04', 'Corrupta: se queda en un ciclo o muestra error.', 'Lectura con programador.', 'Programas erráticos.', 'Chip de 8 patas cerca del MCU.', 0),
+      X('optotriac', 'Optotriacs (MOC3021 / MOC3041)', 'Aíslan y disparan los triacs.', 'MOC3021, MOC3041', 'Abierto: el triac no se activa.', 'Modo diodo en el LED interno.', 'Un actuador no funciona.', 'Junto a los triacs.', 1),
+      X('triac', 'Triacs (motor, bomba, válvulas)', 'Controlan las cargas AC.', 'BTA16, BT137, BTA12', 'En corto: la carga siempre encendida; abierto: nunca actúa.', 'Entre MT1 y MT2 debe haber OL.', 'Motor, bomba o válvula sin control.', 'Con disipador pequeño.', 1),
+      X('rele', 'Relés (calefacción, cambio de giro)', 'Conmutan las cargas más grandes.', '10–20 A, 12 V', 'Contactos pegados o quemados.', 'Continuidad al activar.', 'Resistencia o giro sin control.', 'Relés cúbicos.', 1),
+      X('sensor', 'Sensores (presostato, NTC, tacómetro)', 'Informan nivel, temperatura y velocidad.', 'Presostato, NTC 10 kΩ, tacogenerador', 'Sensor sucio o abierto: error de nivel o de temperatura.', 'Mide el sensor y compara con la hoja de datos.', 'Error de ciclo o sin llenado.', 'Mangueras y cables a la placa.', 1)
+    ],
+    'noenc:fusible,fuente,mcu;nocorr:fuente,fusible;motor:triac,optotriac,rele,sensor;reinicia:fuente,eeprom,mcu;intermit:fuente,rele,sensor;clic:rele,fuente;calienta:triac,rele;quemado:triac,rele,varistor;fusible:triac,varistor,fuente;relenoact:rele,mcu,fuente;sinind:mcu,fuente;apaga:fuente,mcu;chispas:rele,triac');
+
+  addCirc('refri', 'Placa de control de refrigerador',
+    'Placas de refrigeradores y neveras. Flujo: fusible y varistor → fuente (capacitiva o conmutada) → microcontrolador con sensores NTC → relé del compresor (con térmico y relé PTC de arranque) y salida de deshielo. Falla típica: relé pegado, NTC fuera de valor, capacitor de la fuente seco.',
+    [
+      X('fusible', 'Fusible de entrada', 'Protege la placa.', '1–3 A', 'Abierto: placa sin energía.', 'Continuidad.', 'Sin energía.', 'En la entrada.', 1, ['varistor']),
+      X('varistor', 'Varistor', 'Absorbe picos de la red.', '10D471K', 'Quemado: se lleva el fusible.', 'Visual.', 'Sin protección.', 'En paralelo con la entrada.', 1),
+      X('fuente', 'Fuente de la placa', 'Genera 5 V y 12 V.', 'Capacitor reductor o conmutada pequeña', 'Capacitores secos o resistencia abierta.', 'Mide 5 V y 12 V.', 'Sin alimentación de la lógica.', 'Zona de entrada.', 1),
+      X('ntc', 'Sensores NTC (evaporador y cabina)', 'Miden la temperatura.', '10 kΩ / 5 kΩ a 25 °C', 'Abierto o fuera de valor: compresor siempre encendido o apagado.', 'Mide la resistencia y compara con tabla.', 'Mal control de temperatura.', 'Sondas con cable dentro del refrigerador.', 1),
+      X('mcu', 'Microcontrolador', 'Decide cuándo arrancar el compresor.', 'MCU de 8–28 patas', 'Dañado: placa sin respuesta.', 'Vcc y señales de salida.', 'Sin control.', 'Chip central.', 1),
+      X('rele', 'Relé del compresor', 'Conmuta el compresor.', '16 A, bobina 12 V', 'Contactos pegados: compresor siempre encendido; quemados: nunca arranca.', 'Continuidad al activar; sin carbón en los contactos.', 'Compresor sin control.', 'El relé más grande.', 1),
+      X('arranque', 'Relé de arranque PTC y térmico del compresor', 'Ayudan al arranque del compresor.', 'PTC 3–9 Ω frío + térmico', 'Abierto: el compresor no arranca (zumba).', 'Continuidad del PTC (frío) y del térmico.', 'Compresor zumba y se apaga.', 'Montados en el compresor.', 1),
+      X('deshielo', 'Control de deshielo (resistencia + termostato)', 'Derrite el hielo del evaporador.', 'Resistencia 150–300 Ω y térmico', 'Abierto: se forma hielo y baja el rendimiento.', 'Continuidad de la resistencia y del térmico.', 'Hielo excesivo.', 'Evaporador del congelador.', 0)
+    ],
+    'noenc:fusible,fuente,mcu;nocorr:fuente,fusible;calienta:rele,arranque;zumbido:arranque,rele;clic:rele,arranque;apaga:arranque,fuente,ntc,rele;fusible:varistor,fuente;quemado:varistor,rele;intermit:rele,ntc,fuente;relenoact:rele,mcu,fuente;vbajo:ntc,rele;humedad:deshielo,ntc;motor:arranque,rele,mcu');
+
+  addCirc('router', 'Router / módem (adaptador + reguladores + procesador)',
+    'Routers y módems. Flujo: adaptador externo de 9/12 V → jack → protección y capacitor de entrada → reductores y reguladores (3,3 V, 1,8 V, 1,2 V) → procesador (SoC) + memoria flash/RAM → puertos Ethernet con transformadores. Falla típica: adaptador débil, capacitores secos, reinicios.',
+    [
+      X('adaptador', 'Adaptador de pared (9/12 V)', 'Alimenta el router.', '9 V o 12 V, 0,5–2 A', 'Voltaje bajo o con rizado alto: reinicios o no enciende.', 'Mide en vacío y con carga.', 'Sin alimentación estable.', 'Fuera del equipo.', 1),
+      X('jack', 'Jack DC y protección', 'Conecta la alimentación.', 'Jack 5,5×2,1 mm + diodo de protección', 'Jack flojo o diodo en corto: sin energía o intermitente.', 'Movimiento del jack; continuidad.', 'Alimentación intermitente.', 'Trasera del router.', 1),
+      X('cin', 'Capacitores de entrada', 'Filtran la alimentación.', '470–1000 µF, 16 V', 'Secos: reinicios y calentamiento.', 'ESR y capacitancia.', 'Reinicios.', 'Junto al jack.', 1),
+      X('buck', 'Reductores buck (3,3 V / 1,8 V / 1,2 V)', 'Bajan el voltaje para el SoC y memorias.', 'IC pequeños + inductor + diodo', 'Sin salida: el router no arranca o se reinicia.', 'Mide cada riel.', 'Sin alimentación al procesador.', 'IC y bobinas negras.', 1),
+      X('ldo', 'Reguladores LDO (AMS1117 / similar)', 'Estabilizan rieles menores.', 'AMS1117-3.3, 1.8, 1.2', 'Sin salida o muy calientes.', 'Entrada ≥ salida + 1 V.', 'Se pierde un riel.', 'Cuerpo SOT-223.', 1),
+      X('soc', 'Procesador (SoC)', 'Ejecuta el sistema.', 'MIPS/ARM con disipador', 'Soldaduras frías o muerto: sin arranque.', 'Calentamiento y rieles correctos.', 'Sin funcionamiento.', 'El chip más grande.', 1),
+      X('flash', 'Memoria flash y RAM', 'Guardan el firmware.', '25Q32 / 25Q64 + DDR', 'Firmware corrupto: se queda en un ciclo o en logo.', 'Programador de memorias.', 'El router no arranca el sistema.', 'Chips de 8 o 48+ patas.', 1),
+      X('phy', 'Puertos Ethernet + transformadores', 'Conectan la red cableada.', 'Magnéticos 1:1 y RJ45', 'Puerto muerto o sin link.', 'Prueba con otro cable y puerto; revisa soldaduras.', 'Sin red por cable.', 'Conectores RJ45.', 0),
+      X('xtal', 'Cristal', 'Da la referencia de reloj.', '25 MHz o 40 MHz', 'Sin oscilar: sin arranque.', 'Con osciloscopio.', 'El SoC no inicia.', 'Cerca del SoC.', 1)
+    ],
+    'noenc:adaptador,jack,cin,buck;nocorr:adaptador,jack,buck,ldo;reinicia:adaptador,cin,flash,buck;apaga:adaptador,cin,buck,soc;calienta:soc,ldo,buck;intermit:jack,adaptador,cin,phy;quemado:ldo,buck,cin;noimagen:phy,soc;sinind:soc,flash,buck');
+
+  addCirc('clased', 'Amplificador clase D (módulo PAM8403 / TPA3116)',
+    'Módulos pequeños y amplificadores de bajo calor. Flujo: fuente (5–24 V) → entrada de audio → IC clase D → filtros LC de salida → parlante; con protección DC y mute.',
+    [
+      X('fuente', 'Fuente de alimentación', 'Alimenta el módulo.', '5 V (PAM8403) o 12–24 V (TPA3116)', 'Voltaje bajo o con ruido: sin sonido o distorsión.', 'Mide con carga.', 'Sin potencia.', 'Entrada del módulo.', 1),
+      X('entrada', 'Entrada de audio + capacitores de acople', 'Reciben la señal.', 'Capacitores de 1 µF y potenciómetro de volumen', 'Potenciómetro sucio o capacitor abierto: volumen cae o sin señal.', 'Inyecta señal y sigue con el osciloscopio.', 'Sin señal.', 'Entrada del módulo.', 1),
+      X('ic', 'IC amplificador clase D', 'Amplifica la señal con PWM.', 'PAM8403, TPA3116, TDA7498', 'Sin salida o con calor excesivo.', 'Alimentación y señal en los pines de entrada.', 'Sin sonido.', 'El chip con disipador.', 1),
+      X('filtroL', 'Inductores y capacitores de salida', 'Filtran el PWM y entregan audio.', '10–22 µH + 0,22–1 µF', 'Inductor abierto o capacitor seco: sonido bajo o distorsión.', 'Continuidad del inductor.', 'Salida deficiente.', 'Entre el IC y el parlante.', 1),
+      X('proteccion', 'Protección DC y mute', 'Protege el parlante.', 'Circuito de mute / SD pin', 'Mute pegado: sin sonido.', 'Estado del pin de mute.', 'Sin sonido o con ruidos de encendido.', 'Pin del IC.', 0),
+      X('parlante', 'Parlante', 'Reproduce el sonido.', '4–8 Ω', 'Bobina abierta o cono roto.', 'Resistencia de 3–8 Ω.', 'Sin sonido.', 'Salida del módulo.', 1),
+      X('disipador', 'Disipador', 'Evita sobrecalentamiento.', 'Aleta', 'Falta o mal sujeto: el IC se apaga.', 'Temperatura moderada.', 'Se apaga al subir volumen.', 'Sobre el IC.', 0)
+    ],
+    'noenc:fuente,ic;nosuena:entrada,ic,proteccion,filtroL,parlante;distorsion:fuente,filtroL,parlante,entrada;zumbido:fuente,entrada,filtroL;calienta:ic,disipador,fuente;apaga:ic,disipador,fuente;quemado:ic,filtroL;vbajo:fuente,entrada;intermit:entrada,parlante,fuente');
+
+  addCirc('temporiz', 'Temporizador con 555 (astable / monoestable)',
+    'Temporizadores y osciladores básicos. Flujo: fuente → NE555 con resistencias y capacitor de tiempo → salida (LED, buzzer o transistor + relé). El tiempo depende de RC.',
+    [
+      X('fuente', 'Fuente de alimentación', 'Alimenta el 555.', '5–15 V', 'Sin voltaje: sin funcionamiento.', 'Mide en el pin 8.', 'No arranca.', 'Entrada de energía.', 1),
+      X('ne555', 'NE555 / LM555', 'Genera el temporizado.', 'DIP-8 o SOIC-8', 'Dañado: sin pulsos o salida fija.', 'Pines 1 (GND) y 8 (Vcc); salida pin 3.', 'Sin temporizado.', 'Chip de 8 patas.', 1),
+      X('rt', 'Resistencias de tiempo', 'Fijan el tiempo con el capacitor.', '1 kΩ–1 MΩ', 'Valor cambiado: tiempos erróneos.', 'Mide fuera del circuito.', 'Tiempo incorrecto.', 'Conectadas a los pines 6, 7 y 2.', 1),
+      X('ct', 'Capacitor de tiempo', 'Fija la duración.', '1 nF–1000 µF', 'Seco o con fuga: tiempos largos o muy cortos.', 'Capacímetro.', 'Tiempo erróneo.', 'En los pines 2 y 6.', 1),
+      X('disparo', 'Pulsador o entrada de disparo', 'Inicia el ciclo.', 'Pulsador o sensor', 'Contacto sucio: no dispara.', 'Continuidad al pulsar.', 'No inicia.', 'Entrada del circuito.', 1),
+      X('salida', 'Salida (LED, buzzer o transistor + relé)', 'Muestra o activa la carga.', 'LED + 330 Ω o BC547 + relé', 'Transistor dañado o relé pegado.', 'Mide en la salida.', 'No actúa.', 'Pin 3 del 555.', 1),
+      X('cdes', 'Capacitor de desacople', 'Estabiliza la alimentación.', '100 nF', 'Abierto: disparos falsos.', 'Capacímetro.', 'Funcionamiento errático.', 'Entre Vcc y GND.', 0)
+    ],
+    'noenc:fuente,ne555;nocorr:fuente,ne555,salida;intermit:ct,cdes,disparo;apaga:ct,rt,ne555;clic:salida,ne555;calienta:ne555,salida;relenoact:salida,ne555;sinind:salida,ne555,fuente;vbajo:fuente,ne555');
+
+  addCirc('fotoc', 'Fotocélula / interruptor crepuscular (LDR + relé)',
+    'Encienden luces al oscurecer. Flujo: fuente → LDR + potenciómetro de sensibilidad → transistor o comparador → relé → carga.',
+    [
+      X('fuente', 'Fuente de alimentación', 'Alimenta el circuito.', '12 V DC o capacitiva 110/220 V', 'Sin voltaje: no funciona.', 'Mide 12 V.', 'Sin funcionamiento.', 'Entrada.', 1),
+      X('ldr', 'LDR (fotorresistencia)', 'Detecta la luz.', '10 kΩ–1 MΩ en oscuridad, < 5 kΩ con luz', 'Sucio o dañado: no detecta.', 'Mide con luz y a oscuras.', 'No detecta la luz.', 'Ventana frontal.', 1),
+      X('ajuste', 'Potenciómetro de sensibilidad', 'Fija el nivel de luz al que actúa.', '100 kΩ–1 MΩ', 'Desajustado o sucio: actúa a destiempo.', 'Resistencia al girar.', 'Actúa muy pronto o nunca.', 'Pequeño trimmer.', 1),
+      X('transistor', 'Transistor o comparador', 'Decide cuándo activar el relé.', 'BC547 / LM393', 'Dañado: relé pegado o sin actuar.', 'Modo diodo y tensión en base.', 'No hay decisión.', 'Junto al relé.', 1),
+      X('rele', 'Relé', 'Conecta la carga.', '10 A, bobina 12 V', 'Contactos quemados o pegados.', 'Continuidad al activar.', 'La luz no se enciende o no se apaga.', 'Componente cúbico.', 1),
+      X('diodo', 'Diodo de rueda libre', 'Protege el transistor.', '1N4007', 'En corto: relé sin alimentación; abierto: quema el transistor.', 'Modo diodo.', 'El transistor se daña.', 'En paralelo con la bobina.', 1)
+    ],
+    'noenc:fuente,transistor;nocorr:rele,transistor,ldr;relenoact:rele,transistor,ldr,ajuste;clic:rele,transistor,fuente;intermit:ldr,ajuste,rele;quemado:transistor,diodo;apaga:ldr,ajuste,transistor;sinind:rele,transistor');
+
+  addCirc('cargli', 'Cargador de Li-ion (TP4056) con protección',
+    'Cargadores de 1 celda (18650, LiPo). Flujo: fuente USB de 5 V → módulo TP4056 con RPROG → protección DW01 + FS8205 → celda. El LED rojo indica carga y el azul/verde carga completa.',
+    [
+      X('fuente', 'Fuente USB 5 V', 'Alimenta el módulo.', '5 V, ≥ 1 A', 'Fuente débil: carga lenta o se reinicia.', 'Mide 5 V con carga.', 'Sin carga.', 'Entrada micro-USB / USB-C.', 1),
+      X('tp4056', 'IC TP4056', 'Controla la carga CC/CV a 4,2 V.', 'SOP-8, 1 A máx.', 'Calienta o no carga la celda.', 'Mide 4,2 V al final de la carga.', 'Sin carga.', 'Chip de 8 patas.', 1),
+      X('rprog', 'Resistencia RPROG', 'Fija la corriente de carga: I = 1200 ÷ R.', '1,2 kΩ = 1 A', 'Valor cambiado: corriente incorrecta.', 'Mide fuera del circuito.', 'Carga muy lenta o rápida.', 'Cerca del pin PROG.', 0),
+      X('proteccion', 'Protección DW01 + FS8205', 'Corta ante sobrecarga, sobredescarga y corto.', 'DW01A + FS8205A', 'Abierta: no entrega energía de salida; o no protege.', 'Voltaje en OUT con la celda cargada.', 'La celda queda aislada.', 'Dos chips pequeños junto a la celda.', 1),
+      X('bateria', 'Celda Li-ion', 'Almacena la energía.', '3,7 V, 600–3500 mAh', 'Hinchada o por debajo de 2,5 V: no cargar.', 'Voltaje en reposo 3,0–4,2 V.', 'Sin energía almacenada.', 'En B+ y B−.', 1),
+      X('leds', 'LED indicadores', 'Muestran estado.', 'Rojo y azul/verde', 'Abierto: sin estado.', 'Mide voltaje.', 'Solo pierdes el indicador.', 'Junto al TP4056.', 0)
+    ],
+    'noenc:fuente,tp4056;nocarga:tp4056,proteccion,fuente,bateria;calienta:tp4056,proteccion;quemado:tp4056,proteccion;bateriaagota:bateria,proteccion;apaga:proteccion,bateria;intermit:fuente,proteccion;sinind:leds,tp4056,fuente');
+
+  addCirc('termico', 'Plancha / hervidor / cafetera (termostato + resistencia)',
+    'Aparatos de calefacción simples. Flujo: cable → fusible térmico → interruptor → termostato → resistencia calefactora, con piloto luminoso. ⚠ Tensión de red y calor: desconecta siempre.',
+    [
+      X('cable', 'Cable y enchufe', 'Alimenta el aparato.', '3 × 1 mm², 10 A', 'Cable roto por el pliegue: intermitente o sin energía.', 'Continuidad moviendo el cable.', 'Sin energía.', 'Entrada del aparato.', 1),
+      X('fusible', 'Fusible térmico', 'Corta si se sobrecalienta.', '72–240 °C, 10–16 A', 'Abierto (por falla del termostato o sobrecalentamiento).', 'Continuidad (debe sonar).', 'Sin calefacción.', 'En serie con la resistencia, cerca de ella.', 1),
+      X('interruptor', 'Interruptor', 'Enciende y apaga.', '10–16 A', 'Contactos quemados.', 'Continuidad al accionar.', 'No enciende.', 'Panel exterior.', 1),
+      X('termostato', 'Termostato', 'Regula la temperatura.', 'Bimetálico, 90–250 °C', 'Pegado o abierto: sobrecalienta o no calienta.', 'Continuidad en frío; debe abrir al calentar.', 'No regula.', 'Junto a la resistencia.', 1),
+      X('resistencia', 'Resistencia calefactora', 'Produce el calor.', '20–60 Ω según potencia', 'Abierta: no calienta.', 'Resistencia: P = V² ÷ R (ej. 1000 W / 110 V ≈ 12 Ω).', 'Sin calor.', 'Parte metálica interna.', 1),
+      X('piloto', 'Piloto luminoso', 'Indica que está encendido.', 'Neón o LED + resistencia', 'Abierto: no se ve el estado.', 'Mide la tensión en el piloto.', 'Solo pierdes el indicador.', 'Panel exterior.', 0)
+    ],
+    'noenc:cable,fusible,interruptor;nocorr:cable,fusible,interruptor,resistencia;calienta:termostato,fusible;apaga:termostato,fusible;fusible:termostato,resistencia;quemado:resistencia,termostato;corto:cable,resistencia;intermit:cable,interruptor;toque:cable,resistencia;humedad:resistencia,cable;sinind:piloto');
+
+  addCirc('soldador', 'Soldador / estación con control de temperatura',
+    'Soldadores de temperatura regulada. Flujo: fusible → transformador o fuente → control (triac o MOSFET) con sensor (termopar o NTC) → resistencia calefactora; display y perilla.',
+    [
+      X('fusible', 'Fusible de entrada', 'Protege.', '1–3 A', 'Abierto: sin energía.', 'Continuidad.', 'Sin energía.', 'En la entrada.', 1),
+      X('trafo', 'Transformador o fuente', 'Alimenta el elemento y el control.', '24 V AC o DC', 'Abierto o corto.', 'Resistencia del primario y AC de salida.', 'Sin alimentación.', 'Parte pesada de la estación.', 1),
+      X('control', 'Control de temperatura', 'Mantiene la temperatura fija.', 'Opamp + potenciómetro o MCU', 'Descalibrado: temperatura errónea.', 'Compara con termómetro.', 'Sin regulación.', 'Placa del panel.', 1),
+      X('triac', 'Triac o MOSFET de potencia', 'Conmuta la corriente al elemento.', 'BT136, BTA12, IRF540', 'En corto: temperatura siempre al máximo.', 'Modo diodo o OL entre MT1 y MT2.', 'Se sobrecalienta.', 'Con disipador.', 1),
+      X('sensor', 'Sensor (termopar o NTC)', 'Mide la temperatura.', 'Termopar tipo K o NTC 100 kΩ', 'Abierto: lectura errónea.', 'Resistencia o tensión (mV) vs. temperatura.', 'Control sin retroalimentación.', 'Dentro de la punta.', 1),
+      X('resist', 'Elemento calefactor', 'Produce calor.', '24 V / 50–80 W', 'Abierto: no calienta.', 'Resistencia: 8–12 Ω para 60 W a 24 V.', 'No calienta.', 'En el mango o en el cartucho.', 1),
+      X('display', 'Display y perilla', 'Fijan y muestran la temperatura.', 'Display de 3 dígitos / potenciómetro', 'Sin lectura o desajustado.', 'Mide Vcc y el potenciómetro.', 'Solo pierdes la lectura.', 'Panel frontal.', 0)
+    ],
+    'noenc:fusible,trafo;nocorr:trafo,fusible;calienta:triac,sensor,control;apaga:sensor,control,trafo;quemado:triac,trafo;intermit:sensor,resist,trafo;vbajo:resist,sensor,triac;valto:triac,control,sensor;sinind:display,control');
+
+  addCirc('emerg', 'Lámpara de emergencia (cargador + batería + LED)',
+    'Luces de emergencia recargables. Flujo: red → cargador (capacitivo o transformador) → batería → detector de corte (transistor) → driver → LED. Al faltar la red, el transistor enciende los LED automáticamente.',
+    [
+      X('cargador', 'Cargador (capacitivo o con transformador)', 'Recarga la batería desde la red.', 'Capacitor X2 + resistencia + diodos, o transformador', 'Capacitor seco o resistencia abierta: no carga.', 'Mide la tensión de carga en la batería.', 'La batería no se carga.', 'Entrada de red.', 1),
+      X('bateria', 'Batería (plomo-ácido 6 V o Ni-MH)', 'Alimenta los LED en un corte.', '6 V 1,3–4 Ah', 'Agotada o sulfatada: dura poco.', 'Voltaje en reposo y bajo carga.', 'Poca autonomía.', 'Compartimento de batería.', 1),
+      X('deteccion', 'Detector de corte (transistor)', 'Enciende los LED al faltar la red.', 'BC557 / S8550 + resistencias', 'Dañado: los LED no encienden en el corte o siempre encienden.', 'Con la red desconectada la base debe bajar y el transistor conducir.', 'No enciende en un apagón.', 'Cerca del cargador.', 1),
+      X('driver', 'Driver de LED (resistencias / IC)', 'Limita la corriente de los LED.', 'Resistencias de 10–100 Ω', 'Resistencia abierta: LED apagados.', 'Resistencia fuera del circuito.', 'LED sin energía o sobrecorriente.', 'Cerca de los LED.', 1),
+      X('leds', 'LED o panel de LED', 'Iluminan.', '10–60 LED', 'LED abierto: apagados parciales.', 'Prueba con una fuente limitada.', 'Menos luz.', 'Frente de la lámpara.', 1),
+      X('interruptor', 'Interruptor / test', 'Enciende o prueba la lámpara.', 'Interruptor o pulsador', 'Contactos sucios.', 'Continuidad.', 'No se puede probar.', 'Lateral.', 0)
+    ],
+    'noenc:cargador,bateria,deteccion;nocarga:cargador,bateria;bateriaagota:bateria,cargador;apaga:bateria,deteccion;intermit:bateria,interruptor,leds;vbajo:bateria,cargador;sinind:leds,driver,deteccion;quemado:cargador,driver;calienta:cargador,driver');
+
+  addCirc('solar', 'Controlador de carga solar (PWM)',
+    'Controladores de panel solar a batería. Flujo: panel → fusible → diodo de bloqueo → MOSFET de conmutación → batería; control (MCU o comparadores) con sensor de voltaje y salida a carga con protección.',
+    [
+      X('fusible', 'Fusible de panel / batería', 'Protege contra cortos.', '10–30 A', 'Abierto: sin carga.', 'Continuidad.', 'No llega energía.', 'En el positivo.', 1),
+      X('diodo', 'Diodo de bloqueo / Schottky', 'Evita que la batería se descargue al panel de noche.', '20–40 A Schottky', 'En corto: se descarga de noche; abierto: sin carga.', 'Modo diodo.', 'Pérdida de energía de noche.', 'Con disipador.', 1),
+      X('mosfet', 'MOSFET de conmutación', 'Regula la corriente de carga con PWM.', 'IRF4905, IRF3205', 'En corto: sobrecarga; abierto: sin carga.', 'Modo diodo; G sin corto.', 'La batería se carga mal.', 'Con disipador.', 1, ['fusible']),
+      X('ctrl', 'Control (MCU o comparadores)', 'Mide el voltaje de batería y decide.', 'MCU con ADC o LM358/LM393', 'Sin Vcc: sin carga; mal calibrado: sobrecarga.', 'Vcc, señal PWM al MOSFET.', 'Sin gestión de carga.', 'Placa central.', 1),
+      X('sensado', 'Sensado de voltaje', 'Mide el voltaje de batería y panel.', 'Divisores resistivos', 'Resistencia cambiada: lectura errónea.', 'Compara con multímetro.', 'Carga mal controlada.', 'Cerca del MCU.', 1),
+      X('bateria', 'Batería (plomo-ácido)', 'Almacena la energía.', '12 V', 'Sulfatada: no retiene carga.', 'Voltaje en reposo y bajo carga.', 'Sin autonomía.', 'Salida del controlador.', 1),
+      X('carga', 'Salida de carga con protección', 'Alimenta cargas DC y corta con batería baja.', 'MOSFET o relé', 'Dañado: carga sin energía o sin corte.', 'Voltaje en la salida de carga.', 'La carga no funciona o descarga la batería.', 'Terminales de carga.', 0)
+    ],
+    'noenc:fusible,ctrl;nocorr:fusible,diodo,mosfet;nocarga:mosfet,diodo,ctrl,fusible,sensado;calienta:mosfet,diodo;quemado:mosfet,diodo;bateriaagota:bateria,diodo,ctrl;apaga:ctrl,sensado,bateria;valto:mosfet,ctrl,sensado;vbajo:mosfet,diodo,fusible;intermit:fusible,ctrl');
+
   /* Circuitos propios del usuario (guardados en el teléfono) */
   var CLAVE_U = 'inventario_circ_user_v1';
   var propios = {};
@@ -1855,6 +2148,24 @@
     t = norm(t);
     if (/\bups\b|no break|nobreak|respaldo|\bsai\b/.test(t)) return 'ups';
     if (/amplific|audio|bocina|parlante|receptor|equipo de sonido|\bamp\b|bafle|minicomponente/.test(t)) return 'amp';
+    if (/protector de voltaje|protector de refri|protector de nevera|protector de tv|supresor de picos|supresor de voltaje|guarda ?voltaje|protector de tension/.test(t)) return 'protmod';
+    if (/estabilizador|regulador automatico|\bavr\b|regulador de voltaje/.test(t)) return 'avr';
+    if (/inversor|inverter|convertidor 12|12v a 110|12v a 220/.test(t)) return 'inv';
+    if (/cargador de bateria de auto|cargador de plomo|cargador de bateria de carro|cargador de bateria 12/.test(t)) return 'cargpb';
+    if (/dimmer|atenuador|regulador de luz|control de fase/.test(t)) return 'dimmer';
+    if (/bombillo led|lampara led|foco led|bombilla led|driver de led/.test(t)) return 'ledriver';
+    if (/lavadora|lavarropas|centrifug/.test(t)) return 'lavctrl';
+    if (/refrigerador|nevera|frigorifico|heladera|congelador/.test(t)) return 'refri';
+    if (/\brouter\b|\bmodem\b/.test(t)) return 'router';
+    if (/plancha|hervidor|cafetera|tostadora|calentador|termo electrico/.test(t)) return 'termico';
+    if (/soldador|cautin|estacion de soldadura/.test(t)) return 'soldador';
+    if (/lampara de emergencia|luz de emergencia/.test(t)) return 'emerg';
+    if (/panel solar|controlador solar|regulador solar|controlador de carga/.test(t)) return 'solar';
+    if (/tp4056|cargador de litio|cargador de 18650|cargador li/.test(t)) return 'cargli';
+    if (/clase d|pam8403|tpa3116|modulo de audio/.test(t)) return 'clased';
+    if (/fotocelula|crepuscular|foto celda|fotocelda/.test(t)) return 'fotoc';
+    if (/temporizador|\btimer\b|\b555\b/.test(t)) return 'temporiz';
+    if (/motor dc|controlador de motor|control de motor/.test(t)) return 'mdc';
     if (/fuente atx|fuente de pc|fuente de computadora|fuente de poder|\batx\b|power supply|psu/.test(t)) return 'atx';
     if (/televisor|\btv\b|\btele\b|smart tv|led tv|retroiluminacion|backlight/.test(t)) return 'tv';
     if (/cargador|adaptador|fuente de pc|fuente atx|laptop|televisor|\btv\b|monitor|router|decodificador|impresora|fuente conmutada|smps/.test(t)) return 'con';
@@ -1953,6 +2264,16 @@
       if (!n && s.x && s.x.some(coincide)) n = 1;
       if (!n) return;
       detectados.push(s);
+      var propias = (circ && CIRC[circ] && CIRC[circ].s && CIRC[circ].s[s.id]) || [];
+      propias.forEach(function (cid2, i) {
+        var k2 = CIRC[circ].comps.filter(function (x) { return x.id === cid2; })[0];
+        if (!k2) return;
+        var c2 = { t: k2.n + ': ' + k2.f, p: Math.max(1, 3 - Math.floor(i / 2)), c: null, k: k2.id, q: k2.p };
+        var peso2 = c2.p * (1 + 0.5 * (n - 1)) * 1.5;
+        if (!mapa[c2.t]) mapa[c2.t] = { c: c2, puntaje: 0, sint: [] };
+        mapa[c2.t].puntaje += peso2;
+        if (mapa[c2.t].sint.indexOf(s.t) === -1) mapa[c2.t].sint.push(s.t);
+      });
       s.c.forEach(function (c) {
         if (circ && c.c && c.c.indexOf(circ) === -1 && !(CALIAS[circ] && c.c.indexOf(CALIAS[circ]) !== -1)) return;
         var peso = c.p * (1 + 0.5 * (n - 1));
@@ -2418,19 +2739,18 @@
     $('resCirc').textContent = '';
     $('panelEditor').hidden = false;
     $('panelLista').hidden = true;
+    $('panelModo').hidden = true; $('panelLogica').hidden = true; $('panelGen').hidden = true; $('lgRes').textContent = '';
     $('panelEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function cerrarEditor() {
-    ed = null;
+    ed = null; $('lgRes').textContent = '';
     $('panelEditor').hidden = true;
     $('panelLista').hidden = false;
   }
 
   $('edNombre').addEventListener('input', function () { if (ed) ed.n = $('edNombre').value; });
   $('edDesc').addEventListener('input', function () { if (ed) ed.desc = $('edDesc').value; });
-  $('btnNuevoCirc').addEventListener('click', function () {
-    abrirEditor({ id: null, n: '', desc: '', comps: [compVacio()] }, '➕ Nuevo circuito');
-  });
+  $('btnNuevoCirc').addEventListener('click', function () { abrirModo(); });
   $('btnDuplicar').addEventListener('click', function () {
     var cid = selCirc.value;
     if (cid) abrirEditor(copiaDe(cid, false), '📑 Copia editable de: ' + CIRC[cid].n);
@@ -2759,10 +3079,10 @@
   }
 
   function abrirGen() {
-    $('panelGen').hidden = false; $('panelLista').hidden = true; $('panelEditor').hidden = true; $('resCirc').textContent = '';
+    $('panelGen').hidden = false; $('panelLista').hidden = true; $('panelEditor').hidden = true; $('panelModo').hidden = true; $('panelLogica').hidden = true; $('lgRes').textContent = ''; $('resCirc').textContent = '';
     $('panelGen').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
-  function cerrarGen() { $('panelGen').hidden = true; $('panelLista').hidden = false; }
+  function cerrarGen() { $('panelGen').hidden = true; $('genRes').textContent = ''; $('panelLista').hidden = false; }
   function modoGen() {
     var carga = $('genUso').value === 'carga';
     $('genFuente').hidden = carga; $('genCarga').hidden = !carga; $('genRes').textContent = '';
@@ -2865,6 +3185,193 @@
     if (!f) { im.hidden = true; im.removeAttribute('src'); return; }
     urlPista = URL.createObjectURL(f);
     im.src = urlPista; im.hidden = false;
+  });
+
+  /* =====================================================================
+     CREAR CIRCUITO POR LÓGICA: el usuario lista lo que ve y la app deduce
+     qué circuito es y qué faltaría (coincidencia ponderada)
+     ===================================================================== */
+  var ID_KW = {
+    fusible: 'fusible,portafusible,fuse,resistencia fusible', varistor: 'varistor,mov,disco azul', ntc: 'ntc,termistor',
+    puente: 'puente rectificador,puente de diodos,puente,4 diodos,kbp,gbu,kbpc,rectificador', trafo: 'transformador de hierro,transformador reductor,transformador pequeno,transformador,trafo,laminas',
+    trafohf: 'transformador de ferrita,trafo de ferrita,ferrita,flyback', filtro: 'capacitor de filtro,condensador de filtro,electrolitico grande,capacitor grande,filtro',
+    cprim: 'capacitor de 400,condensador de 400,400v,400 v,capacitor primario,electrolitico de 400', cfiltro: 'capacitor de 400,electrolitico de 400,capacitor de filtro 400',
+    capsalida: 'capacitor de salida,condensador de salida,capacitor de desacople,desacople', csec: 'capacitor de salida,condensador de salida,capacitores de salida,baja esr',
+    regulador: 'regulador,7805,7812,lm317,lm338,78xx', reg5: 'regulador de 5,7805,78l05', reg: 'regulador,7805,78l05', ldo: 'ams1117,ldo,lm1117',
+    led: 'led,diodo led,diodo emisor', leds: 'leds,led smd,placa de led,tira led', arranque: 'resistencias de arranque,resistencia de arranque',
+    icpwm: 'ic pwm,uc3842,uc3843,uc3844,uc3845,tl494,ka7500,sg3525,sg6105,controlador pwm,tny,viper', mosfet: 'mosfet,transistor de potencia,irf,k2645,2n60,7n60,fet',
+    snubber: 'snubber,diodo de enclavamiento,rcd', diodosec: 'diodo schottky,diodos del secundario,diodo secundario,schottky,diodo rapido,stps,mbr,sbl',
+    opto: 'optoacoplador,opto,pc817,817,el817,4n25', tl431: 'tl431,431,referencia', cargador: 'cargador,circuito cargador',
+    bateria: 'bateria,pila,acumulador,celda,18650', fusbat: 'fusible de bateria', mcu: 'microcontrolador,micro,pic,atmega,stc,mcu,procesador,arduino',
+    inversor: 'inversor,puente h', rele: 'rele,relay,relevador', reles: 'reles,relays,relevadores', buzzer: 'buzzer,zumbador,bocina piezo,alarma',
+    entrada: 'jack de entrada,entrada de audio,rca,conector de entrada,entrada', preamp: 'preamplificador,preamp,transistor de entrada',
+    driver: 'driver,transistor driver,drivers de compuerta,ir2110,ir2104', salida: 'transistores de salida,tip,2n3055,ic de salida,tda,lm386',
+    remisor: 'resistencias de emisor,resistencia de emisor', bias: 'bias,trimmer,preset,ajuste de reposo', proteccion: 'proteccion,rele de proteccion,dw01,fs8205,protector',
+    disipador: 'disipador,aleta,heatsink,radiador', fuente: 'fuente,fuente de alimentacion,fuente auxiliar', rbase: 'resistencia de base',
+    transistor: 'transistor,bc547,2n2222,s8050,s8550,bjt,npn,pnp', diodo: 'diodo de rueda libre,diodo,1n4007,1n4148,diodo flyback', bobina: 'bobina del rele,bobina',
+    contactos: 'contactos del rele,contactos', x2: 'capacitor x2,capacitor de seguridad,filtro de linea,choke de linea,capacitor y', standby: 'standby,5vsb,fuente standby',
+    super: 'lm339,wt7520,ps223,supervisor', pfc: 'pfc,correccion de factor de potencia', driverled: 'driver de led,driver de retroiluminacion',
+    tiras: 'tiras led,tiras de led,backlight,retroiluminacion', main: 'placa main,main,soc', eeprom: 'eeprom,24c02,24c16,25q,memoria', tcon: 'tcon,t-con,t con',
+    flex: 'flex,cinta flex,cintas', sensado: 'zener,divisor de tension,sensado,sensor de voltaje', comp: 'comparador,lm393,transistores de disparo',
+    retardo: 'retardo,temporizador,555,ne555', fuente5: 'fuente de 5,mini fuente,capacitor reductor', display: 'display,pantalla,7 segmentos',
+    botones: 'botones,pulsador,boton', autotrafo: 'autotransformador,autotrafo,toroidal', osc: 'oscilador,cd4047', regulacion: 'regulacion,scr,selector de corriente',
+    amper: 'amperimetro', corte: 'corte automatico', pinzas: 'pinzas,cocodrilos', pot: 'potenciometro,pot,perilla', rc: 'red rc', diac: 'diac,db3',
+    triac: 'triac,bta16,bt136,bta12,bt137', capdrop: 'capacitor reductor,capacitor de caida', icled: 'ic driver,bp3105,sm2082,hv9910', ind: 'inductor,choke,inductancia',
+    ctrl: 'control,controlador,pwm', optotriac: 'optotriac,moc3021,moc3041', sensor: 'sensor,presostato,termopar,sensor de temperatura,tacometro',
+    adaptador: 'adaptador,eliminador,fuente externa', jack: 'jack,conector dc,plug de alimentacion', cin: 'capacitor de entrada,condensador de entrada',
+    buck: 'buck,reductor,convertidor', soc: 'soc,cpu', flash: 'flash,ram', phy: 'ethernet,rj45,puerto de red', xtal: 'cristal,xtal,cuarzo',
+    ic: 'ic,circuito integrado,chip,pam8403,tpa3116', filtroL: 'inductor de salida,filtro lc,bobinas de salida', parlante: 'parlante,altavoz',
+    ne555: 'ne555,555,lm555', rt: 'resistencias de tiempo', ct: 'capacitor de tiempo,condensador de tiempo', disparo: 'disparo,boton de inicio',
+    ldr: 'ldr,fotorresistencia,fotocelda,sensor de luz', ajuste: 'potenciometro de sensibilidad', tp4056: 'tp4056,modulo cargador', rprog: 'rprog',
+    deteccion: 'detector de corte', termostato: 'termostato,bimetalico', resistencia: 'resistencia calefactora,elemento calefactor', resist: 'elemento calefactor,resistencia calefactora',
+    control: 'control de temperatura', cable: 'cable,enchufe', interruptor: 'interruptor,switch', piloto: 'piloto,neon', deshielo: 'deshielo', carga: 'salida de carga',
+    trafoa: 'transformador'
+  };
+  var KWN = {};
+  Object.keys(ID_KW).forEach(function (id) { KWN[id] = ID_KW[id].split(',').map(function (x) { return norm(x).trim(); }).filter(Boolean); });
+  function phraseIn(p, t) {
+    if (p.length < 4) return new RegExp('(^|[^a-z0-9])' + p.replace(/[^a-z0-9 ]/g, '') + '([^a-z0-9]|$)').test(t);
+    return t.indexOf(p) !== -1;
+  }
+  function mejorFrase(id, t, comp) {
+    var best = 0, lista = KWN[id];
+    if (!lista) {
+      var w = norm(comp.n).split(/[^a-z0-9]+/).filter(function (x) { return x.length >= 5; })[0];
+      lista = w ? [w] : [];
+    }
+    lista.forEach(function (p) { if (p.length > best && phraseIn(p, t)) best = p.length; });
+    return best;
+  }
+  function mejorGlobal(t) {
+    var best = 0;
+    Object.keys(KWN).forEach(function (id) { KWN[id].forEach(function (p) { if (p.length > best && phraseIn(p, t)) best = p.length; }); });
+    return best;
+  }
+  function itemsDeTexto(txt0) {
+    return String(txt0 || '').split(/[\n,;]+|\s+y\s+/i).map(function (x) {
+      return x.trim().replace(/^(\d{1,3}\s*[x×]?\s+|un\s+|una\s+|dos\s+|tres\s+)/i, '').trim();
+    }).filter(function (x) { return x.length >= 2; }).slice(0, 80);
+  }
+  function peso(k, df, N) { return (k.c ? 1.5 : 1) * (1 + Math.log(N / (df[k.id] || 1))); }
+
+  function deducirPorLista(items) {
+    var ids = Object.keys(CIRC), N = ids.length, df = {};
+    ids.forEach(function (cid) { var vistos = {}; CIRC[cid].comps.forEach(function (k) { if (!vistos[k.id]) { vistos[k.id] = 1; df[k.id] = (df[k.id] || 0) + 1; } }); });
+    var datos = items.map(function (it) { var t = norm(it); return { orig: it, t: t, g: mejorGlobal(t) }; });
+    var reconocidos = datos.filter(function (d) { return d.g > 0; });
+    var res = ids.map(function (cid) {
+      var comps = CIRC[cid].comps, usados = {}, hechos = [], totalW = 0, hitW = 0;
+      comps.forEach(function (k) { totalW += peso(k, df, N); });
+      reconocidos.forEach(function (d) {
+        var cand = comps.map(function (k) { return { k: k, s: mejorFrase(k.id, d.t, k) }; })
+          .filter(function (x) { return x.s > 0 && x.s >= 0.6 * d.g && !usados[x.k.id + '|' + comps.indexOf(x.k)]; })
+          .sort(function (a, b) { return b.s - a.s; });
+        if (!cand.length) return;
+        var k = cand[0].k;
+        usados[k.id + '|' + comps.indexOf(k)] = true;
+        hechos.push({ k: k, item: d.orig }); hitW += peso(k, df, N);
+      });
+      var recall = totalW ? hitW / totalW : 0, prec = reconocidos.length ? hechos.length / reconocidos.length : 0;
+      var faltan = comps.filter(function (k) { return !hechos.some(function (h) { return h.k === k; }); })
+        .sort(function (a, b) { return (b.c - a.c) || (peso(b, df, N) - peso(a, df, N)); });
+      return { cid: cid, score: 0.65 * recall + 0.35 * prec, recall: recall, hechos: hechos, faltan: faltan };
+    }).filter(function (r) { return r.hechos.length >= 2 || r.score >= 0.2; })
+      .sort(function (a, b) { return b.score - a.score; });
+    return { res: res.slice(0, 3), noReconocidos: datos.filter(function (d) { return d.g === 0; }).map(function (d) { return d.orig; }), n: items.length };
+  }
+
+  var LG_CHIPS = ['Fusible', 'Varistor', 'Termistor NTC', 'Puente rectificador', 'Transformador de hierro', 'Transformador de ferrita', 'Capacitor de 400 V', 'Capacitor de filtro', 'Optoacoplador', 'TL431', 'IC PWM', 'MOSFET', 'Transistor', 'Triac', 'DIAC', 'SCR', 'Relé', 'Regulador 7805', 'LM317', 'Zener', 'Diodo schottky', 'LED', 'Display', 'Microcontrolador', 'Buzzer', 'Batería', 'Inductor', 'Potenciómetro', 'LDR', 'Termostato', 'Cristal', 'Memoria EEPROM', 'Sensor de temperatura', 'Disipador', 'Parlante', 'Comparador LM393', '555', 'Jack de entrada'];
+  var lgTxt = $('lgTexto');
+  LG_CHIPS.forEach(function (t) {
+    $('lgChips').appendChild(boton('chip', t, function () {
+      var actual = itemsDeTexto(lgTxt.value).map(norm);
+      if (actual.indexOf(norm(t)) !== -1) return;
+      lgTxt.value = lgTxt.value.trim() ? lgTxt.value.trim().replace(/[,;]\s*$/, '') + ', ' + t : t;
+    }));
+  });
+
+  function abrirModo() {
+    $('panelModo').hidden = false; $('panelLista').hidden = true; $('panelEditor').hidden = true; $('panelGen').hidden = true; $('panelLogica').hidden = true; $('resCirc').textContent = '';
+    $('panelModo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function cerrarPaneles() {
+    ['panelModo', 'panelLogica', 'panelGen', 'panelEditor'].forEach(function (id) { $(id).hidden = true; });
+    $('panelLista').hidden = false;
+  }
+  $('btnModoManual').addEventListener('click', function () {
+    $('panelModo').hidden = true;
+    abrirEditor({ id: null, n: '', desc: '', comps: [compVacio()] }, '➕ Nuevo circuito');
+  });
+  $('btnModoLogica').addEventListener('click', function () {
+    $('panelModo').hidden = true; $('panelLogica').hidden = false; $('lgRes').textContent = '';
+    $('panelLogica').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  $('btnModoGen').addEventListener('click', function () { $('panelModo').hidden = true; abrirGen(); });
+  $('btnModoCerrar').addEventListener('click', cerrarPaneles);
+  $('lgCerrar').addEventListener('click', cerrarPaneles);
+
+  $('lgDeducir').addEventListener('click', function () {
+    var items = itemsDeTexto(lgTxt.value), out = $('lgRes');
+    out.textContent = '';
+    if (items.length < 2) { aviso('Escribe al menos 2 componentes (o toca los botones)'); return; }
+    var r = deducirPorLista(items);
+    var cab = el('section', 'panel');
+    cab.appendChild(el('h2', '', '🧠 Resultado de la deducción'));
+    cab.appendChild(el('p', 'ayuda', 'Comparé tus ' + r.n + ' componentes con ' + Object.keys(CIRC).length + ' circuitos conocidos. Los componentes raros (como un optoacoplador o un TL431) pesan más que los comunes (como un fusible).'));
+    if (r.noReconocidos.length) cab.appendChild(el('p', 'ayuda', 'No reconocí: ' + r.noReconocidos.join(', ') + '. Puedes guardarlos en tu propio circuito abajo.'));
+    out.appendChild(cab);
+    if (!r.res.length) {
+      var nada = el('section', 'panel');
+      nada.appendChild(el('h2', '', 'No coincide con un circuito conocido'));
+      nada.appendChild(el('p', 'ayuda', 'Con esos componentes no puedo asegurar qué circuito es. Agrega más piezas que veas (transformadores, circuitos integrados con su código, relés, capacitores grandes) o guarda tu lista como un circuito propio.'));
+      out.appendChild(nada);
+    }
+    r.res.forEach(function (x, i) {
+      var C0 = CIRC[x.cid], pct = Math.round(Math.min(1, x.score) * 100);
+      var p = el('section', 'panel');
+      p.appendChild(el('h2', '', (i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : '🥉 ') + C0.n));
+      p.appendChild(el('p', 'ayuda', 'Coincidencia: ' + pct + ' % · tienes ' + x.hechos.length + ' de ' + C0.comps.length + ' componentes.'));
+      var ver = el('div', 'chips fijos');
+      x.hechos.forEach(function (h) { ver.appendChild(el('span', 'pill', '✔ ' + h.k.n.split(/ [\/(]/)[0])); });
+      p.appendChild(ver);
+      var crit = x.faltan.filter(function (k) { return k.c; });
+      var otros = x.faltan.filter(function (k) { return !k.c; });
+      if (!x.faltan.length) p.appendChild(el('p', 'ayuda', 'Tienes todos los componentes de este circuito.'));
+      if (crit.length) {
+        var bl = el('div', 'bloque falta');
+        bl.appendChild(el('h3', '', 'Faltaría o no mencionaste (críticos) · ' + crit.length));
+        crit.slice(0, 6).forEach(function (k) {
+          var it = el('div', 'item');
+          it.appendChild(el('strong', '', k.n));
+          it.appendChild(el('p', '', 'Valor típico: ' + k.v));
+          it.appendChild(el('p', '', 'Cómo reconocerlo en la placa: ' + k.d));
+          bl.appendChild(it);
+        });
+        if (crit.length > 6) bl.appendChild(el('p', 'ayuda', '… y ' + (crit.length - 6) + ' más al analizar el circuito.'));
+        p.appendChild(bl);
+      }
+      if (otros.length) p.appendChild(el('p', 'ayuda', 'Secundarios no mencionados: ' + otros.map(function (k) { return k.n.split(/ [\/(]/)[0]; }).join(', ') + '.'));
+      p.appendChild(boton('btn btn-primary', '🔎 Analizar este circuito', function () {
+        if (!estado[x.cid]) estado[x.cid] = {};
+        x.hechos.forEach(function (h) { if (!estado[x.cid][h.k.id] || !estado[x.cid][h.k.id].s) estado[x.cid][h.k.id] = { s: 'ok', n: '' }; });
+        guardarEstado();
+        cerrarPaneles();
+        selCirc.value = x.cid;
+        renderLista();
+        $('listaComp').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        aviso('Marqué como "presente" lo que me dijiste');
+      }));
+      out.appendChild(p);
+    });
+    var own = el('section', 'panel');
+    own.appendChild(el('h2', '', '💾 ¿Es otro circuito?'));
+    own.appendChild(el('p', 'ayuda', 'Guarda tu lista como circuito propio ★ para analizarlo y completarlo después.'));
+    own.appendChild(boton('btn btn-sec', '💾 Guardar mi lista como circuito propio', function () {
+      $('panelLogica').hidden = true;
+      abrirEditor({ id: null, n: '', desc: 'Creado a partir de la lista de componentes vistos en la placa.', comps: items.map(function (t) { var c = compVacio(); c.n = t.charAt(0).toUpperCase() + t.slice(1); c.c = false; return c; }) }, '💾 Mi circuito por lista');
+    }));
+    out.appendChild(own);
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   renderLista();
